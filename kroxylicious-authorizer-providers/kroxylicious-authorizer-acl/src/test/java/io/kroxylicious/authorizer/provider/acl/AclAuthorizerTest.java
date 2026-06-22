@@ -14,6 +14,7 @@ import java.util.concurrent.CompletionStage;
 
 import org.junit.jupiter.api.Test;
 
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.authorizer.provider.acl.allow.FakeClusterResource;
 import io.kroxylicious.authorizer.provider.acl.allow.FakeTopicResource;
 import io.kroxylicious.authorizer.service.Action;
@@ -21,7 +22,6 @@ import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Authorizer;
 import io.kroxylicious.authorizer.service.Decision;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 

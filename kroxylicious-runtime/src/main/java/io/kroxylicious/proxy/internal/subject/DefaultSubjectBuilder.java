@@ -13,8 +13,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import io.kroxylicious.authentication.Principal;
-import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
 import io.kroxylicious.proxy.authentication.ProxySubject;
+import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 
 public class DefaultSubjectBuilder implements TransportSubjectBuilder, SaslSubjectBuilder {

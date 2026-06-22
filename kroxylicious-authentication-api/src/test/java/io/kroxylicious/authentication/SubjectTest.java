@@ -36,6 +36,5 @@ class SubjectTest {
         assertThat(subject.principals()).isEmpty();
     }
 
-    record TestPrincipal(String name) implements Principal {
-    }
+    record TestPrincipal(String name) implements Principal {}
 }

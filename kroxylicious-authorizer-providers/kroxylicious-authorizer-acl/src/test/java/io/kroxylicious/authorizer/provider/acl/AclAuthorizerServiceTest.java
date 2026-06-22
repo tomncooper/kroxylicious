@@ -19,6 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.authorizer.provider.acl.allow.FakeClusterResource;
 import io.kroxylicious.authorizer.provider.acl.allow.FakeTopicResource;
 import io.kroxylicious.authorizer.provider.acl.allow.ServiceAccount;
@@ -26,7 +27,6 @@ import io.kroxylicious.authorizer.service.Action;
 import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Decision;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 

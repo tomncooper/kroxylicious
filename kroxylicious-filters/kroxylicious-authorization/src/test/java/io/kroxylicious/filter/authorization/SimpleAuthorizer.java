@@ -14,12 +14,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Subject;
 import io.kroxylicious.authorizer.service.Action;
 import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Authorizer;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.authentication.Principal;
-import io.kroxylicious.authentication.Subject;
 
 class SimpleAuthorizer implements Authorizer {
 

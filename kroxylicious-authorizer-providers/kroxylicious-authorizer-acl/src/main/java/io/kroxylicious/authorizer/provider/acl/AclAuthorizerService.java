@@ -32,13 +32,13 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import com.google.re2j.Pattern;
 import com.google.re2j.PatternSyntaxException;
 
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.authorizer.provider.acl.parser.AclRulesBaseListener;
 import io.kroxylicious.authorizer.provider.acl.parser.AclRulesLexer;
 import io.kroxylicious.authorizer.provider.acl.parser.AclRulesParser;
 import io.kroxylicious.authorizer.service.Authorizer;
 import io.kroxylicious.authorizer.service.AuthorizerService;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.plugin.Plugin;
 import io.kroxylicious.proxy.plugin.Plugins;
 

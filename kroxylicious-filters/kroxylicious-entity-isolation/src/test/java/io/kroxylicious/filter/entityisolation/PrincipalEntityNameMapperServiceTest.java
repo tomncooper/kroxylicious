@@ -13,8 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.kroxylicious.filter.entityisolation.PrincipalEntityNameMapperService.Config;
 import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.filter.entityisolation.PrincipalEntityNameMapperService.Config;
 import io.kroxylicious.proxy.authentication.User;
 
 import edu.umd.cs.findbugs.annotations.Nullable;

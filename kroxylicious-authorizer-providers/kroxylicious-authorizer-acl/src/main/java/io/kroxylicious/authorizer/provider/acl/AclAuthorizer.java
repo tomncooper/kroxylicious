@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 import com.google.re2j.Pattern;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Subject;
 import io.kroxylicious.authorizer.service.Action;
 import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Authorizer;
 import io.kroxylicious.authorizer.service.Decision;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.authentication.Principal;
-import io.kroxylicious.authentication.Subject;
 import io.kroxylicious.proxy.tag.VisibleForTesting;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
