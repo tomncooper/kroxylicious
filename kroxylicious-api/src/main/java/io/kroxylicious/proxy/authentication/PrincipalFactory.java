@@ -6,6 +6,8 @@
 
 package io.kroxylicious.proxy.authentication;
 
+import io.kroxylicious.authentication.Principal;
+
 public interface PrincipalFactory<P extends Principal> {
     P newPrincipal(String name);
 }

@@ -11,34 +11,34 @@ import java.util.concurrent.CompletionStage;
 import io.kroxylicious.proxy.tls.ClientTlsContext;
 
 /**
- * <p>Builds a {@link Subject} based on information available from a successful SASL authentication.</p>
+ * <p>Builds a {@link ProxySubject} based on information available from a successful SASL authentication.</p>
  *
  * <p>A {@code SaslSubjectBuilder} instance is constructed by a {@link SaslSubjectBuilderService}.</p>
  *
  * <p>A SASL-authenticating {@link io.kroxylicious.proxy.filter.Filter Filter}
  * <em>may</em> use a {@code SaslSubjectBuilder} in order to construct the
- * {@link Subject} with which it calls
- * {@link io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(String, Subject)
- * FilterContext.clientSaslAuthenticationSuccess(String, Subject)}.
+ * {@link ProxySubject} with which it calls
+ * {@link io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(String, ProxySubject)
+ * FilterContext.clientSaslAuthenticationSuccess(String, ProxySubject)}.
  * As such, {@code SaslSubjectBuilder} is an opt-in way of decoupling the building of Subjects
  * from the mechanism of SASL authentication.
  * SASL-authenticating filters are not obliged to use this abstraction.</p>
  *
  * <p>{@link TransportSubjectBuilder} is a similar interface use for building a
- * {@code Subject} based on transport-layer information.
+ * {@code ProxySubject} based on transport-layer information.
  * However, note that a {@code SaslSubjectBuilder} is not specified directly
  * on a virtual cluster as a {@code TransportSubjectBuilder} is.</p>
  */
 public interface SaslSubjectBuilder {
 
     /**
-     * Returns an asynchronous result which completes with the {@code Subject} built
+     * Returns an asynchronous result which completes with the {@code ProxySubject} built
      * from the given {@code context}.
      * @param context The context of a successful SASL authentication.
      * @return The Subject. The returned stage should fail with an {@link SubjectBuildingException} if the builder was not able to
      * build a subject.
      */
-    CompletionStage<Subject> buildSaslSubject(SaslSubjectBuilder.Context context);
+    CompletionStage<ProxySubject> buildSaslSubject(SaslSubjectBuilder.Context context);
 
     /**
      * The context that's passed to {@link #buildSaslSubject(Context)}.

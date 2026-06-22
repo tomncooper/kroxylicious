@@ -6,6 +6,9 @@
 
 package io.kroxylicious.proxy.authentication;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Unique;
+
 /**
  * A principal identifying an authenticated client.
  * It is currently required to use this principal to represent clients that have authenticated via

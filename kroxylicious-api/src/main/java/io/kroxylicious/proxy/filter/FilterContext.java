@@ -16,7 +16,7 @@ import org.apache.kafka.common.protocol.ApiMessage;
 import org.apache.kafka.common.utils.ByteBufferOutputStream;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.filter.metadata.TopicNameMapping;
 import io.kroxylicious.proxy.filter.metadata.TopicNameMappingException;
 import io.kroxylicious.proxy.tls.ClientTlsContext;
@@ -188,7 +188,7 @@ public interface FilterContext {
      * @param subject The subject
      */
     void clientSaslAuthenticationSuccess(String mechanism,
-                                         Subject subject);
+                                         ProxySubject subject);
 
     /**
      * Allows a filter (typically one which implements {@code SaslAuthenticateRequestFilter})
@@ -198,7 +198,7 @@ public interface FilterContext {
      * It is the filter's responsibility to return the right error response to a client, and/or disconnect.
      *
      * In order to support reauthentication, calls to this method and
-     * {@link #clientSaslAuthenticationSuccess(String, Subject)}
+     * {@link #clientSaslAuthenticationSuccess(String, ProxySubject)}
      * may be arbitrarily interleaved during the lifetime of a given filter instance.
      * @param mechanism The SASL mechanism used, or null if this is not known.
      * @param authorizedId The authorizedId, or null if this is not known.
@@ -224,7 +224,7 @@ public interface FilterContext {
      *   no authentication is configured, or the transport layer cannot provide authentication (e.g. TCP or non-mutual TLS transports).</li>
      *   <li>When client mutual TLS authentication is configured this will
      *   initially return a non-anonymous {@code Subject} based on the TLS certificate presented by the client.</li>
-     *   <li>At any point, if a filter invokes {@link #clientSaslAuthenticationSuccess(String, Subject)} then that subject
+     *   <li>At any point, if a filter invokes {@link #clientSaslAuthenticationSuccess(String, ProxySubject)} then that subject
      *   will override the existing subject.</li>
      *   <li>Because of the possibility of <em>reauthentication</em> it is also possible for the
      *   subject to change even after then initial SASL reauthentication.</li>
@@ -235,13 +235,13 @@ public interface FilterContext {
      *
      * <p>Which principals are present in the returned subject, and what their {@code name}s look like,
      * depends on the configuration of network
-     * and/or {@link #clientSaslAuthenticationSuccess(String, Subject)}-calling filters.
+     * and/or {@link #clientSaslAuthenticationSuccess(String, ProxySubject)}-calling filters.
      * In general, filters should be configurable with respect to the principal type when interrogating the returned
      * subject.</p>
      *
      * @return The client subject
-     * @see #clientSaslAuthenticationSuccess(String, Subject)
+     * @see #clientSaslAuthenticationSuccess(String, ProxySubject)
      */
-    Subject authenticatedSubject();
+    ProxySubject authenticatedSubject();
 
 }
