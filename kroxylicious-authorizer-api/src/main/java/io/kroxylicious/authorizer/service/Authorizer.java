@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.authentication.Subject;
 
 /**
  * <p>Abstracts making an allow/deny decision about some {@link Subject} performing some {@link Action} on a resource.
