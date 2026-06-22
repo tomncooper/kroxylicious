@@ -30,7 +30,7 @@ import org.assertj.core.util.Lists;
 import com.google.common.collect.Maps;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilterResult;
 import io.kroxylicious.proxy.filter.RequestFilterResultBuilder;
@@ -61,7 +61,7 @@ public class MockFilterContext implements FilterContext {
     public static final String DEFAULT_SESSION_ID = "sessionId";
     public static final String DEFAULT_SNI_HOSTNAME = "sniHostname";
     public static final String DEFAULT_VIRTUAL_CLUSTER_NAME = "virtualCluster";
-    public static final Subject DEFAULT_AUTHENTICATED_SUBJECT = Subject.anonymous();
+    public static final ProxySubject DEFAULT_AUTHENTICATED_SUBJECT = ProxySubject.anonymous();
 
     private static TopicNameMappingException notConfiguredException() {
         return new TopicNameMappingException(Errors.UNKNOWN_SERVER_ERROR, "no mapping for topicId configured in MockFilterContext");
@@ -79,7 +79,7 @@ public class MockFilterContext implements FilterContext {
     private final ClientSaslContext clientSaslContext;
     @Nullable
     private final ClientTlsContext clientTlsContext;
-    private final Subject authenticatedSubject;
+    private final ProxySubject authenticatedSubject;
     private final List<MockSendRequestResponse> sendRequestResponses;
     private final List<SendRequestInvocation> sendRequestInvocations = new CopyOnWriteArrayList<>();
     private final List<ClientSaslGestureInvocation> clientSaslGestureInvocations = new CopyOnWriteArrayList<>();
@@ -96,7 +96,7 @@ public class MockFilterContext implements FilterContext {
                               String virtualClusterName,
                               @Nullable ClientSaslContext clientSaslContext,
                               @Nullable ClientTlsContext clientTlsContext,
-                              Subject authenticatedSubject,
+                              ProxySubject authenticatedSubject,
                               List<MockSendRequestResponse> sendRequestResponses) {
         this.sendRequestResponses = sendRequestResponses;
         Objects.requireNonNull(header, "header must not be null");
@@ -137,7 +137,7 @@ public class MockFilterContext implements FilterContext {
         private ClientSaslContext clientSaslContext = null;
         @Nullable
         private ClientTlsContext clientTlsContext = null;
-        private Subject authenticatedSubject = DEFAULT_AUTHENTICATED_SUBJECT;
+        private ProxySubject authenticatedSubject = DEFAULT_AUTHENTICATED_SUBJECT;
         private final List<MockSendRequestResponse> sendRequestResponses = Lists.newArrayList();
 
         public MockFilterContextBuilder(ApiMessage header, ApiMessage message) {
@@ -228,7 +228,7 @@ public class MockFilterContext implements FilterContext {
             return this;
         }
 
-        public MockFilterContextBuilder withAuthenticatedSubject(Subject subject) {
+        public MockFilterContextBuilder withAuthenticatedSubject(ProxySubject subject) {
             Objects.requireNonNull(subject);
             this.authenticatedSubject = subject;
             return this;
@@ -371,7 +371,7 @@ public class MockFilterContext implements FilterContext {
     }
 
     @Override
-    public void clientSaslAuthenticationSuccess(String mechanism, Subject subject) {
+    public void clientSaslAuthenticationSuccess(String mechanism, ProxySubject subject) {
         clientSaslGestureInvocations.add(new ClientSaslGestureInvocation.AuthenticationSuccess(mechanism, subject));
     }
 
@@ -386,7 +386,7 @@ public class MockFilterContext implements FilterContext {
     }
 
     @Override
-    public Subject authenticatedSubject() {
+    public ProxySubject authenticatedSubject() {
         return authenticatedSubject;
     }
 
@@ -607,7 +607,7 @@ public class MockFilterContext implements FilterContext {
     }
 
     public sealed interface ClientSaslGestureInvocation {
-        record AuthenticationSuccess(String mechanism, Subject subject) implements ClientSaslGestureInvocation {}
+        record AuthenticationSuccess(String mechanism, ProxySubject subject) implements ClientSaslGestureInvocation {}
 
         record AuthenticationFailure(@Nullable String mechanism, @Nullable String authorizedId, Exception exception) implements ClientSaslGestureInvocation {}
     }

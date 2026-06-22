@@ -12,9 +12,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 
 public class DefaultSubjectBuilder implements TransportSubjectBuilder, SaslSubjectBuilder {
@@ -25,15 +25,15 @@ public class DefaultSubjectBuilder implements TransportSubjectBuilder, SaslSubje
     }
 
     @Override
-    public CompletionStage<Subject> buildTransportSubject(TransportSubjectBuilder.Context context) {
+    public CompletionStage<ProxySubject> buildTransportSubject(TransportSubjectBuilder.Context context) {
         try {
             if (adders.isEmpty()) {
-                return CompletableFuture.completedFuture(Subject.anonymous());
+                return CompletableFuture.completedFuture(ProxySubject.anonymous());
             }
             Set<Principal> collect = adders.stream()
                     .flatMap(adder -> adder.createPrincipals(context))
                     .collect(Collectors.toSet());
-            return CompletableFuture.completedStage(new Subject(collect));
+            return CompletableFuture.completedStage(new ProxySubject(collect));
         }
         catch (Exception e) {
             return CompletableFuture.failedStage(e);
@@ -41,12 +41,12 @@ public class DefaultSubjectBuilder implements TransportSubjectBuilder, SaslSubje
     }
 
     @Override
-    public CompletionStage<Subject> buildSaslSubject(SaslSubjectBuilder.Context context) {
+    public CompletionStage<ProxySubject> buildSaslSubject(SaslSubjectBuilder.Context context) {
         try {
             Set<Principal> collect = adders.stream()
                     .flatMap(lal -> lal.createPrincipals(context))
                     .collect(Collectors.toSet());
-            return CompletableFuture.completedStage(new Subject(collect));
+            return CompletableFuture.completedStage(new ProxySubject(collect));
         }
         catch (Exception e) {
             return CompletableFuture.failedStage(e);

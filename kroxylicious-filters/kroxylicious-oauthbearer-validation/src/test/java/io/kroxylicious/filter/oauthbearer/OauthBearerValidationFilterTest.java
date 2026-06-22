@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import io.kroxylicious.filter.oauthbearer.sasl.BackoffStrategy;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilterResultBuilder;
@@ -188,7 +188,7 @@ class OauthBearerValidationFilterTest {
 
         verify(context).forwardResponse(any(ResponseHeaderData.class), eq(givenAuthenticateResponse));
         verify(context).forwardRequest(any(RequestHeaderData.class), eq(givenAuthenticateRequest));
-        verify(context).clientSaslAuthenticationSuccess(OAUTHBEARER_MECHANISM, new Subject(new User(AUTHORIZED_ID)));
+        verify(context).clientSaslAuthenticationSuccess(OAUTHBEARER_MECHANISM, new ProxySubject(new User(AUTHORIZED_ID)));
     }
 
     private void stubInitialAuthentication() throws NoSuchAlgorithmException {
@@ -213,7 +213,7 @@ class OauthBearerValidationFilterTest {
 
         verify(context).forwardResponse(any(ResponseHeaderData.class), eq(givenAuthenticateResponse));
         verify(context).forwardRequest(any(RequestHeaderData.class), eq(givenAuthenticateRequest));
-        verify(context).clientSaslAuthenticationSuccess(OAUTHBEARER_MECHANISM, new Subject(new User(AUTHORIZED_ID)));
+        verify(context).clientSaslAuthenticationSuccess(OAUTHBEARER_MECHANISM, new ProxySubject(new User(AUTHORIZED_ID)));
     }
 
     @Test

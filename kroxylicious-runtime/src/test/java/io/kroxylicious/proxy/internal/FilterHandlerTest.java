@@ -49,7 +49,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.ApiVersionsRequestFilter;
 import io.kroxylicious.proxy.filter.ApiVersionsResponseFilter;
@@ -1293,7 +1293,7 @@ class FilterHandlerTest extends FilterHarness {
         // Given
         SaslAuthenticateResponseData responseData = new SaslAuthenticateResponseData().setSessionLifetimeMs(10_000);
         buildChannel((SaslAuthenticateRequestFilter) (apiVersion, header, request, context) -> {
-            context.clientSaslAuthenticationSuccess(ScramMechanism.SCRAM_SHA_512.mechanismName(), new Subject(new User(AUTHORIZATION_ID)));
+            context.clientSaslAuthenticationSuccess(ScramMechanism.SCRAM_SHA_512.mechanismName(), new ProxySubject(new User(AUTHORIZATION_ID)));
             return context.requestFilterResultBuilder().shortCircuitResponse(responseData).completed();
         });
 

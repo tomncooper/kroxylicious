@@ -20,7 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -109,10 +109,10 @@ class ClientSubjectManagerTest {
     void transitionInitialToAuthorized() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(Subject.anonymous()), Runnable::run, () -> {
+        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(ProxySubject.anonymous()), Runnable::run, () -> {
         });
         // When
-        impl.clientSaslAuthenticationSuccess("FOO", new Subject(new User("bob")));
+        impl.clientSaslAuthenticationSuccess("FOO", new ProxySubject(new User("bob")));
         // Then
         assertThat(impl.clientSaslContext()).hasValueSatisfying(csc -> {
             assertThat(csc.mechanismName()).isEqualTo("FOO");
@@ -124,7 +124,7 @@ class ClientSubjectManagerTest {
     void transitionInitialToFailed() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(Subject.anonymous()), Runnable::run, () -> {
+        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(ProxySubject.anonymous()), Runnable::run, () -> {
         });
         // When
         impl.clientSaslAuthenticationFailure();
@@ -136,11 +136,11 @@ class ClientSubjectManagerTest {
     void transitionAuthorizedToAuthorized() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(Subject.anonymous()), Runnable::run, () -> {
+        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(ProxySubject.anonymous()), Runnable::run, () -> {
         });
-        impl.clientSaslAuthenticationSuccess("FOO", new Subject(new User("bob")));
+        impl.clientSaslAuthenticationSuccess("FOO", new ProxySubject(new User("bob")));
         // When
-        impl.clientSaslAuthenticationSuccess("BAR", new Subject(new User("sue")));
+        impl.clientSaslAuthenticationSuccess("BAR", new ProxySubject(new User("sue")));
         // Then
         assertThat(impl.clientSaslContext()).hasValueSatisfying(csc -> {
             assertThat(csc.mechanismName()).isEqualTo("BAR");
@@ -152,9 +152,9 @@ class ClientSubjectManagerTest {
     void transitionAuthorizedToFailed() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(Subject.anonymous()), Runnable::run, () -> {
+        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(ProxySubject.anonymous()), Runnable::run, () -> {
         });
-        impl.clientSaslAuthenticationSuccess("FOO", new Subject(new User("bob")));
+        impl.clientSaslAuthenticationSuccess("FOO", new ProxySubject(new User("bob")));
         // When
         impl.clientSaslAuthenticationFailure();
         // Then
@@ -165,12 +165,12 @@ class ClientSubjectManagerTest {
     void transitionFailedToAuthorized() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(Subject.anonymous()), Runnable::run, () -> {
+        impl.subjectFromTransport(null, context -> CompletableFuture.completedStage(ProxySubject.anonymous()), Runnable::run, () -> {
         });
         impl.clientSaslAuthenticationFailure();
 
         // When
-        impl.clientSaslAuthenticationSuccess("FOO", new Subject(new User("bob")));
+        impl.clientSaslAuthenticationSuccess("FOO", new ProxySubject(new User("bob")));
         // Then
         assertThat(impl.clientSaslContext()).hasValueSatisfying(csc -> {
             assertThat(csc.mechanismName()).isEqualTo("FOO");
@@ -188,7 +188,7 @@ class ClientSubjectManagerTest {
         // When
         impl.subjectFromTransport(
                 null,
-                context -> CompletableFuture.completedStage(Subject.anonymous()),
+                context -> CompletableFuture.completedStage(ProxySubject.anonymous()),
                 command -> {
                     executorUsed.set(true);
                     command.run();
@@ -204,9 +204,9 @@ class ClientSubjectManagerTest {
     void subjectFromTransportHandlesAsyncCompletion() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        CompletableFuture<Subject> asyncFuture = new CompletableFuture<>();
+        CompletableFuture<ProxySubject> asyncFuture = new CompletableFuture<>();
         AtomicBoolean callbackRan = new AtomicBoolean(false);
-        Subject expectedSubject = new Subject(new User("alice"));
+        ProxySubject expectedSubject = new ProxySubject(new User("alice"));
 
         // When
         impl.subjectFromTransport(
@@ -228,7 +228,7 @@ class ClientSubjectManagerTest {
     void subjectFromTransportHandlesAsyncException() {
         // Given
         ClientSubjectManager impl = new ClientSubjectManager();
-        CompletableFuture<Subject> asyncFuture = new CompletableFuture<>();
+        CompletableFuture<ProxySubject> asyncFuture = new CompletableFuture<>();
         AtomicBoolean callbackRan = new AtomicBoolean(false);
 
         // When
@@ -242,7 +242,7 @@ class ClientSubjectManagerTest {
 
         // Then
         assertThat(callbackRan).isTrue();
-        assertThat(impl.authenticatedSubject()).isEqualTo(Subject.anonymous());
+        assertThat(impl.authenticatedSubject()).isEqualTo(ProxySubject.anonymous());
     }
 
 }

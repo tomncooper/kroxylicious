@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilderService;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.Filter;
 import io.kroxylicious.proxy.filter.FilterFactory;
@@ -44,7 +44,7 @@ public class SaslInspection implements FilterFactory<Config, Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SaslInspection.class);
 
     public static final SaslSubjectBuilder DEFAULT_SUBJECT_BUILDER = context -> CompletableFuture
-            .completedStage(new Subject(Set.of(new User(context.clientSaslContext().authorizationId()))));
+            .completedStage(new ProxySubject(Set.of(new User(context.clientSaslContext().authorizationId()))));
     private @Nullable Map<String, SaslObserverFactory> observerFactoryMap;
     private @Nullable SaslSubjectBuilder subjectBuilder;
     private boolean authenticationRequired = false;

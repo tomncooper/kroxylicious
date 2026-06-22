@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.x500.X500Principal;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilderService;
 import io.kroxylicious.proxy.authentication.User;
@@ -38,16 +38,16 @@ public class MyTransportSubjectBuilderService implements TransportSubjectBuilder
         }
 
         @Override
-        public CompletionStage<Subject> buildTransportSubject(@NonNull Context context) {
+        public CompletionStage<ProxySubject> buildTransportSubject(@NonNull Context context) {
             return context.clientTlsContext()
                     .flatMap(ClientTlsContext::clientCertificate)
-                    .map(tls -> delayed(new Subject(new User(tls.getSubjectX500Principal()
+                    .map(tls -> delayed(new ProxySubject(new User(tls.getSubjectX500Principal()
                             .getName(X500Principal.RFC1779,
                                     Map.of("1.2.840.113549.1.9.1", "emailAddress"))))))
-                    .orElse(delayed(Subject.anonymous()));
+                    .orElse(delayed(ProxySubject.anonymous()));
         }
 
-        CompletionStage<Subject> delayed(Subject subject) {
+        CompletionStage<ProxySubject> delayed(ProxySubject subject) {
             if (delayMs == 0) {
                 if (completeSuccessfully) {
                     return CompletableFuture.completedStage(subject);

@@ -42,7 +42,7 @@ import com.google.common.reflect.ClassPath;
 import io.kroxylicious.authorizer.service.Action;
 import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Authorizer;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilterResult;
@@ -85,7 +85,7 @@ class AuthorizationFilterTest {
     @Test
     void authorizerDoesNotDeclareSupportedResourceTypes() {
         // given
-        Subject subject = Subject.anonymous();
+        ProxySubject subject = ProxySubject.anonymous();
         Authorizer mockAuthorizer = Mockito.mock(Authorizer.class);
         List<Action> actions = List.of(new Action(TopicResource.ALTER_CONFIGS, "resourceA"),
                 new Action(TransactionalIdResource.DESCRIBE, "resourceB"));
@@ -107,7 +107,7 @@ class AuthorizationFilterTest {
     @Test
     void actionsForUnsupportedResourceTypes() {
         // given
-        Subject subject = Subject.anonymous();
+        ProxySubject subject = ProxySubject.anonymous();
         Authorizer mockAuthorizer = Mockito.mock(Authorizer.class);
         AuthorizeResult result = new AuthorizeResult(subject, new ArrayList<>(), new ArrayList<>());
         when(mockAuthorizer.authorize(subject, List.of())).thenReturn(CompletableFuture.completedFuture(result));
@@ -129,7 +129,7 @@ class AuthorizationFilterTest {
     @Test
     void actionsForUnsupportedAndSupportedResourceTypes() {
         // given
-        Subject subject = Subject.anonymous();
+        ProxySubject subject = ProxySubject.anonymous();
         Authorizer mockAuthorizer = Mockito.mock(Authorizer.class);
         Action topicAction = new Action(TopicResource.ALTER_CONFIGS, "resourceA");
         List<Action> actions = List.of(topicAction,
@@ -163,7 +163,7 @@ class AuthorizationFilterTest {
         RequestHeaderData requestHeader = RequestHeaderDataJsonConverter.read(definition.when().requestHeader(), requestHeaderVersion);
 
         Map<Uuid, String> topicNames = Optional.ofNullable(definition.given().topicNames()).orElse(Map.of());
-        Subject subject = new Subject(new User(definition.when().subject()));
+        ProxySubject subject = new ProxySubject(new User(definition.when().subject()));
         FilterContext context = new MockFilterContext(requestHeader, request, subject, topicNames, mockUpstream);
         CompletionStage<RequestFilterResult> stage = authorizationFilter.onRequest(apiKeys, version, requestHeader, request, context);
         ScenarioDefinition.RequestError expectedRequestError = definition.then().expectedRequestError();
@@ -213,7 +213,7 @@ class AuthorizationFilterTest {
         }
     }
 
-    private static void handleRequestForward(ScenarioDefinition definition, CompletionStage<RequestFilterResult> stage, MockUpstream mockUpstream, Subject subject,
+    private static void handleRequestForward(ScenarioDefinition definition, CompletionStage<RequestFilterResult> stage, MockUpstream mockUpstream, ProxySubject subject,
                                              Map<Uuid, String> topicNames, AuthorizationFilter authorizationFilter, ApiKeys apiKeys, short version) {
         RequestFilterResult actual = assertThat(stage).succeedsWithin(Duration.ZERO).actual();
         if (actual.drop()) {

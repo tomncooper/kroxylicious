@@ -30,7 +30,7 @@ import io.netty.handler.codec.haproxy.HAProxyProxiedProtocol;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.bootstrap.FilterChainFactory;
@@ -300,7 +300,7 @@ class KafkaProxyFrontendHandlerMockCollaboratorsTest {
     @Test
     void shouldMarkSessionAuthenticatedWhenSessionTransportAuthenticated() throws Exception {
         // Given
-        Subject subject = new Subject(new User("bob"));
+        ProxySubject subject = new ProxySubject(new User("bob"));
         when(subjectBuilder.buildTransportSubject(any())).thenReturn(CompletableFuture.completedStage(subject));
         var session = new KafkaSession(KafkaSessionState.ESTABLISHING);
         var ccsm = new ClientConnectionStateMachine(endpointBinding, subjectBuilder, session);
@@ -324,7 +324,7 @@ class KafkaProxyFrontendHandlerMockCollaboratorsTest {
     @Test
     void shouldNotMarkSessionAuthenticatedWhenSessionTransportAuthenticatedIsAnonymous() throws Exception {
         // Given
-        when(subjectBuilder.buildTransportSubject(any())).thenReturn(CompletableFuture.completedStage(Subject.anonymous()));
+        when(subjectBuilder.buildTransportSubject(any())).thenReturn(CompletableFuture.completedStage(ProxySubject.anonymous()));
         var session = new KafkaSession(KafkaSessionState.ESTABLISHING);
         var ccsm = new ClientConnectionStateMachine(endpointBinding, subjectBuilder, session);
         handler = new KafkaProxyFrontendHandler(

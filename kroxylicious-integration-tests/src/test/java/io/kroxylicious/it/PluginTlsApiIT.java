@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.kroxylicious.it.testplugins.ClientAuthAwareLawyer;
 import io.kroxylicious.it.testplugins.ClientAuthAwareLawyerFilter;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.config.TransportSubjectBuilderConfig;
 import io.kroxylicious.proxy.config.VirtualClusterBuilder;
 import io.kroxylicious.proxy.config.secret.InlinePassword;
@@ -77,7 +77,7 @@ class PluginTlsApiIT extends AbstractTlsIT {
                 cluster,
                 topic,
                 false,
-                Subject.anonymous().toString(),
+                ProxySubject.anonymous().toString(),
                 null,
                 null);
     }
@@ -101,7 +101,7 @@ class PluginTlsApiIT extends AbstractTlsIT {
                 cluster,
                 topic,
                 true,
-                "Subject[principals=[User[name=CN=client, OU=Dev, O=kroxylicious.io, L=null, ST=null, C=US, emailAddress=clientTest@kroxylicious.io]]]",
+                "ProxySubject[principals=[User[name=CN=client, OU=Dev, O=kroxylicious.io, L=null, ST=null, C=US, emailAddress=clientTest@kroxylicious.io]]]",
                 "CN=client, OU=Dev, O=kroxylicious.io, L=null, ST=null, C=US, emailAddress=clientTest@kroxylicious.io",
                 "CN=localhost, OU=KI, O=kroxylicious.io, L=null, ST=null, C=US, emailAddress=test@kroxylicious.io");
     }
@@ -123,7 +123,7 @@ class PluginTlsApiIT extends AbstractTlsIT {
                 cluster,
                 topic,
                 true,
-                Subject.anonymous().toString(),
+                ProxySubject.anonymous().toString(),
                 null,
                 "CN=localhost, OU=KI, O=kroxylicious.io, L=null, ST=null, C=US, emailAddress=test@kroxylicious.io");
     }
@@ -207,7 +207,7 @@ class PluginTlsApiIT extends AbstractTlsIT {
                     .containsExactly(expectHeaderKeyClientTlsPresent ? (byte) 1 : (byte) 0);
             recordHeaders.singleHeaderWithKey(ClientAuthAwareLawyerFilter.HEADER_KEY_AUTHENTICATED_SUBJECT)
                     .hasValueEqualTo(subjectBuilderServiceConfig != null && subjectBuilderServiceConfig.completeSuccessfully() ? expectedAuthenticatedSubject
-                            : Subject.anonymous().toString());
+                            : ProxySubject.anonymous().toString());
             recordHeaders.singleHeaderWithKey(ClientAuthAwareLawyerFilter.HEADER_KEY_CLIENT_TLS_CLIENT_X500PRINCIPAL_NAME)
                     .hasValueEqualTo(expectedClientPrincipalName);
             recordHeaders.singleHeaderWithKey(ClientAuthAwareLawyerFilter.HEADER_KEY_CLIENT_TLS_PROXY_X500PRINCIPAL_NAME)

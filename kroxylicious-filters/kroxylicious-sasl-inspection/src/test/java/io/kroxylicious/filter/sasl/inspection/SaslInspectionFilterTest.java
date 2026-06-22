@@ -42,7 +42,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.SubjectBuildingException;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.FilterContext;
@@ -528,14 +528,14 @@ class SaslInspectionFilterTest {
         // Given
         when(subjectBuilder.buildSaslSubject(any())).then(a -> {
             var ctx = (SaslSubjectBuilder.Context) a.getArguments()[0];
-            return CompletableFuture.completedFuture(new Subject(new User(ctx.clientSaslContext().authorizationId())));
+            return CompletableFuture.completedFuture(new ProxySubject(new User(ctx.clientSaslContext().authorizationId())));
         });
 
         // When
         doAuthenticateSuccessfully(observerFactory, initialResponse, challengeResponses);
 
         // Then
-        verify(context).clientSaslAuthenticationSuccess(observerFactory.mechanismName(), new Subject(new User(expectedAuthorizedId)));
+        verify(context).clientSaslAuthenticationSuccess(observerFactory.mechanismName(), new ProxySubject(new User(expectedAuthorizedId)));
         verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
 
     }
@@ -550,7 +550,7 @@ class SaslInspectionFilterTest {
                         List.of(new ChallengeResponse(new byte[0], null)),
                         (Consumer<FilterContext>) context -> {
                             verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
-                            verify(context, times(2)).clientSaslAuthenticationSuccess("PLAIN", new Subject(new User("tim")));
+                            verify(context, times(2)).clientSaslAuthenticationSuccess("PLAIN", new ProxySubject(new User("tim")));
                         }),
                 Arguments.argumentSet("reauth changes of authzid",
                         new PlainSaslObserverFactory(),
@@ -560,8 +560,8 @@ class SaslInspectionFilterTest {
                         List.of(new ChallengeResponse(new byte[0], null)),
                         (Consumer<FilterContext>) context -> {
                             verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
-                            verify(context).clientSaslAuthenticationSuccess("PLAIN", new Subject(new User("tim")));
-                            verify(context).clientSaslAuthenticationSuccess("PLAIN", new Subject(new User("timmy")));
+                            verify(context).clientSaslAuthenticationSuccess("PLAIN", new ProxySubject(new User("tim")));
+                            verify(context).clientSaslAuthenticationSuccess("PLAIN", new ProxySubject(new User("timmy")));
                         }));
     }
 
@@ -572,7 +572,7 @@ class SaslInspectionFilterTest {
         // Given
         when(subjectBuilder.buildSaslSubject(any())).then(a -> {
             var ctx = (SaslSubjectBuilder.Context) a.getArguments()[0];
-            return CompletableFuture.completedFuture(new Subject(new User(ctx.clientSaslContext().authorizationId())));
+            return CompletableFuture.completedFuture(new ProxySubject(new User(ctx.clientSaslContext().authorizationId())));
         });
 
         // When
@@ -588,7 +588,7 @@ class SaslInspectionFilterTest {
         // Given
         when(subjectBuilder.buildSaslSubject(any())).then(a -> {
             var ctx = (SaslSubjectBuilder.Context) a.getArguments()[0];
-            return CompletableFuture.completedFuture(new Subject(new User(ctx.clientSaslContext().authorizationId())));
+            return CompletableFuture.completedFuture(new ProxySubject(new User(ctx.clientSaslContext().authorizationId())));
         });
 
         // When
@@ -678,7 +678,7 @@ class SaslInspectionFilterTest {
         // Then
         verify(context).clientSaslAuthenticationFailure(eq(observerFactory.mechanismName()), eq(expectedAuthorizedId), isA(SubjectBuildingException.class));
 
-        verify(context, never()).clientSaslAuthenticationSuccess(anyString(), any(Subject.class));
+        verify(context, never()).clientSaslAuthenticationSuccess(anyString(), any(ProxySubject.class));
         // verify(context).r
 
     }
@@ -708,7 +708,7 @@ class SaslInspectionFilterTest {
         doMetadataRequest(filter, ApiKeys.METADATA.latestVersion());
 
         // Then
-        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(Subject.class));
+        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(ProxySubject.class));
 
         verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
         verify(context, never()).forwardRequest(any(), ArgumentMatchers.assertArg(r -> assertThat(ApiKeys.forId(r.apiKey())).isEqualTo(ApiKeys.METADATA)));
@@ -729,7 +729,7 @@ class SaslInspectionFilterTest {
         var filterResult = doMetadataRequest(filter, ApiKeys.METADATA.latestVersion());
 
         // Then
-        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(Subject.class));
+        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(ProxySubject.class));
 
         verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
         verify(context, times(1)).forwardRequest(any(), ArgumentMatchers.assertArg(r -> assertThat(ApiKeys.forId(r.apiKey())).isEqualTo(ApiKeys.METADATA)));
@@ -772,7 +772,7 @@ class SaslInspectionFilterTest {
         var filterResult = doMetadataRequest(filter, ApiKeys.METADATA.latestVersion());
 
         // Then
-        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(Subject.class));
+        verify(context, never()).clientSaslAuthenticationSuccess(any(), any(ProxySubject.class));
 
         verify(context, never()).clientSaslAuthenticationFailure(anyString(), anyString(), nullable(Exception.class));
         var inOrder = Mockito.inOrder(context);

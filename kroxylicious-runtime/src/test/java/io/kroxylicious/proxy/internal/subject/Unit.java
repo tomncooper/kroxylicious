@@ -6,6 +6,6 @@
 
 package io.kroxylicious.proxy.internal.subject;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 
 public record Unit(String name) implements Principal {}

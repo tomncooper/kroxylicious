@@ -25,6 +25,10 @@
     <dependencies>
         <dependency>
             <groupId>io.kroxylicious</groupId>
+            <artifactId>kroxylicious-authentication-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.kroxylicious</groupId>
             <artifactId>kroxylicious-api</artifactId>
         </dependency>
 
@@ -100,6 +104,14 @@
                     <execution>
                         <id>unpack-message-specs</id>
                         <phase>generate-sources</phase>
+                    </execution>
+                    <execution>
+                        <id>analyze</id>
+                        <configuration>
+                            <ignoredNonTestScopedDependencies>
+                                <ignoredNonTestScopedDependency>io.kroxylicious:kroxylicious-authentication-api</ignoredNonTestScopedDependency>
+                            </ignoredNonTestScopedDependencies>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
