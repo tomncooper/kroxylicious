@@ -6,6 +6,6 @@
 
 package io.kroxylicious.authorizer.provider.acl;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 
 record RolePrincipal(String name) implements Principal {}

@@ -26,8 +26,8 @@ import io.kroxylicious.authorizer.service.Action;
 import io.kroxylicious.authorizer.service.AuthorizeResult;
 import io.kroxylicious.authorizer.service.Decision;
 import io.kroxylicious.authorizer.service.ResourceType;
-import io.kroxylicious.proxy.authentication.Principal;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ class AclAuthorizerServiceTest {
                              ResourceType<?> resourceType,
                              String resourceName) {
         CompletionStage<AuthorizeResult> authorize = authz.authorize(
-                new Subject(principal instanceof User ? Set.of(principal) : Set.of(new User("Mallory"), principal)),
+                new ProxySubject(principal instanceof User ? Set.of(principal) : Set.of(new User("Mallory"), principal)),
                 List.of(new Action(resourceType, resourceName)));
         assertThat(authorize).isCompleted();
         return authorize.toCompletableFuture().join()
@@ -136,7 +136,7 @@ class AclAuthorizerServiceTest {
                                 allow User with name = "Alice" to READ Topic with name = "foo";
 
                                 otherwise deny;""",
-                        "4:6: Principal class 'User' is not a subclass of interface io.kroxylicious.proxy.authentication.Principal."),
+                        "4:6: Principal class 'User' is not a subclass of interface io.kroxylicious.authentication.Principal."),
                 Arguments.argumentSet(
                         "Invalid like",
                         """

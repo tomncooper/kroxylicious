@@ -6,6 +6,6 @@
 
 package io.kroxylicious.authorizer.provider.acl.allow;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 
 public record ServiceAccount(String name) implements Principal {}
