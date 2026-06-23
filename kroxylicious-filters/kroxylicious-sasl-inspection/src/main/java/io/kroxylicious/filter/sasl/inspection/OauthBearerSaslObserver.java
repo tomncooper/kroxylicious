@@ -117,7 +117,7 @@ class OauthBearerSaslObserver implements SaslObserver {
     /**
      * The server's OAuthBearerSaslServer will accept an expired token as authenticated successfully but with a
      * zero {@link SaslAuthenticateResponseData#sessionLifetimeMs()} sent the client. In this circumstance we want to
-     * avoid announcing {@link io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(String, io.kroxylicious.proxy.authentication.Subject)}
+     * avoid announcing {@link io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(String, io.kroxylicious.proxy.authentication.ProxySubject)}
      * and flag a {@link io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationFailure(String, String, Exception)}
      * instead.
      *
