@@ -11,16 +11,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
-import io.kroxylicious.proxy.authentication.Subject;
 import io.kroxylicious.proxy.authentication.User;
 
 public class SaslSubjectBuilderImpl implements SaslSubjectBuilder {
 
     @Override
-    public CompletionStage<Subject> buildSaslSubject(Context context) {
+    public CompletionStage<ProxySubject> buildSaslSubject(Context context) {
         ClientSaslContext clientSaslContext = context.clientSaslContext();
         return CompletableFuture.completedStage(
-                new Subject(Set.of(new User(clientSaslContext.authorizationId()))));
+                new ProxySubject(Set.of(new User(clientSaslContext.authorizationId()))));
     }
 }

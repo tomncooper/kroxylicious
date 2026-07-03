@@ -26,7 +26,7 @@ import io.kroxylicious.authorizer.service.ResourceType;
 import io.kroxylicious.filter.authorization.GroupResource;
 import io.kroxylicious.filter.authorization.TopicResource;
 import io.kroxylicious.filter.authorization.TransactionalIdResource;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 public class AclImplicationIT {
 
     public static final String ALICE = "alice";
-    public static final Subject ALICE_SUBJECT = new Subject(new User(ALICE));
+    public static final ProxySubject ALICE_SUBJECT = new ProxySubject(new User(ALICE));
     public static final String RESOURCE_NAME = "my-resource";
 
     public static Stream<Arguments> implication() {

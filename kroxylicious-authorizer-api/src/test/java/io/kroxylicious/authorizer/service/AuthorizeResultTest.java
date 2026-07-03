@@ -12,7 +12,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 
 class AuthorizeResultTest {
@@ -23,7 +23,7 @@ class AuthorizeResultTest {
         AETHERIFY
     }
 
-    Subject subject = new Subject(new User("alice"));
+    ProxySubject subject = new ProxySubject(new User("alice"));
     Action foo = new Action(TestResource.SQUIDGE, "foo");
     Action bar = new Action(TestResource.SQUIDGE, "bar");
     Action baz = new Action(TestResource.TESSELLATE, "baz");

@@ -6,5 +6,8 @@
 
 package io.kroxylicious.proxy.authentication;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Unique;
+
 @Unique
 public record FakeUniquePrincipal(String name) implements Principal {}

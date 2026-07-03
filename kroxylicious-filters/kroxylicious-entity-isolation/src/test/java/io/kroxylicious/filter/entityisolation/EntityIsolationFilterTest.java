@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.reflect.ClassPath;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilterResult;
@@ -109,7 +109,7 @@ class EntityIsolationFilterTest {
         RequestHeaderData requestHeader = RequestHeaderDataJsonConverter.read(definition.when().requestHeader(), requestHeaderVersion);
 
         Map<Uuid, String> topicNames = Optional.ofNullable(definition.given().topicNames()).orElse(Map.of());
-        Subject subject = Optional.ofNullable(definition.when().subject()).map(User::new).map(Subject::new).orElse(Subject.anonymous());
+        ProxySubject subject = Optional.ofNullable(definition.when().subject()).map(User::new).map(ProxySubject::new).orElse(ProxySubject.anonymous());
         FilterContext context = new MockFilterContext(requestHeader, request, subject, topicNames, mockUpstream);
         CompletionStage<RequestFilterResult> stage = isolationFilter.onRequest(apiKeys, version, requestHeader, request, context);
         ScenarioDefinition.RequestError expectedRequestError = definition.then().expectedRequestError();
@@ -130,7 +130,7 @@ class EntityIsolationFilterTest {
                 .isEmpty();
     }
 
-    private static void handleRequestForward(ScenarioDefinition definition, CompletionStage<RequestFilterResult> stage, MockUpstream mockUpstream, Subject subject,
+    private static void handleRequestForward(ScenarioDefinition definition, CompletionStage<RequestFilterResult> stage, MockUpstream mockUpstream, ProxySubject subject,
                                              Map<Uuid, String> topicNames, EntityIsolationFilter isolationFilter, ApiKeys apiKeys, short version) {
         RequestFilterResult actual = assertThat(stage).succeedsWithin(Duration.ZERO).actual();
         if (actual.drop()) {

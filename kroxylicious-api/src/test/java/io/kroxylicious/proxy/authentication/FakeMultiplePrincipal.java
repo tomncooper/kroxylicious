@@ -6,4 +6,6 @@
 
 package io.kroxylicious.proxy.authentication;
 
+import io.kroxylicious.authentication.Principal;
+
 public record FakeMultiplePrincipal(String name) implements Principal {}

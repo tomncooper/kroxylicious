@@ -7,7 +7,7 @@
 package io.kroxylicious.proxy.authentication;
 
 /**
- * An exception to be thrown if a {@link Subject} cannot be built.
+ * An exception to be thrown if a {@link ProxySubject} cannot be built.
  */
 public class SubjectBuildingException extends RuntimeException {
     public SubjectBuildingException(String message) {

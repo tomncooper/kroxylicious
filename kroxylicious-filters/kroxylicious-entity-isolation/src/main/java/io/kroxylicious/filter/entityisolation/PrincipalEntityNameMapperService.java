@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.plugin.Plugin;
 import io.kroxylicious.proxy.tag.VisibleForTesting;

@@ -19,10 +19,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.filter.entityisolation.EntityIsolation.EntityType;
 import io.kroxylicious.filter.entityisolation.EntityNameMapper.EntityMapperException;
-import io.kroxylicious.proxy.authentication.Principal;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,13 +37,13 @@ class PrincipalEntityNameMapperTest {
     private static final String ALICE_PRINCIPAL_NAME = "alice";
 
     @Mock(strictness = Mock.Strictness.LENIENT)
-    Subject bobSubject;
+    ProxySubject bobSubject;
 
     @Mock(strictness = Mock.Strictness.LENIENT)
     User bobUser;
 
     @Mock(strictness = Mock.Strictness.LENIENT)
-    Subject aliceSubject;
+    ProxySubject aliceSubject;
 
     @Mock(strictness = Mock.Strictness.LENIENT)
     User aliceUser;
@@ -98,13 +98,13 @@ class PrincipalEntityNameMapperTest {
     @Test
     void mapShouldRejectAnonymousSubject() {
         // Given
-        var mapperContext = buildMapperContext(Subject.anonymous());
+        var mapperContext = buildMapperContext(ProxySubject.anonymous());
 
         // When/Then
         assertThatThrownBy(() -> mapper.map(mapperContext, EntityType.TOPIC_NAME, "foo"))
                 .isInstanceOf(EntityMapperException.class)
                 .hasMessageContaining(
-                        "The PrincipalEntityNameMapper requires an authenticated subject with a unique principal of type User with a non-empty name, got subject Subject[principals=[]]");
+                        "The PrincipalEntityNameMapper requires an authenticated subject with a unique principal of type User with a non-empty name, got subject ProxySubject[principals=[]]");
     }
 
     @Test
@@ -207,7 +207,7 @@ class PrincipalEntityNameMapperTest {
         assertThat(mapper.isOwnedByContext(bobContext, EntityType.TOPIC_NAME, aliceUpstreamEntityName)).isFalse();
     }
 
-    private MapperContext buildMapperContext(Subject s) {
+    private MapperContext buildMapperContext(ProxySubject s) {
         return new MapperContext(s, null, null);
     }
 }

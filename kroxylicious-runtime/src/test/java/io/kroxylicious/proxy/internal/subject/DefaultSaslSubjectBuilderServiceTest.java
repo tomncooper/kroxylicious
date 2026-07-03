@@ -20,8 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
-import io.kroxylicious.proxy.authentication.Subject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.tls.ClientTlsContext;
 
@@ -35,7 +35,7 @@ class DefaultSaslSubjectBuilderServiceTest {
 
     private static void sasl(DefaultSaslSubjectBuilderService.Config builderConfig,
                              String authorizedId,
-                             @Nullable Subject expectedSubject) {
+                             @Nullable ProxySubject expectedSubject) {
         var service = new DefaultSaslSubjectBuilderService();
         service.initialize(builderConfig);
         var builder = service.build();
@@ -270,12 +270,12 @@ class DefaultSaslSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*?)-sasl-(.*?)/$1-$2/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("my-name"))));
+                        new ProxySubject(new User("my-name"))));
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSasl(String authzId, String rule, Subject expectedName)
+    void rulesShouldWorkWithSasl(String authzId, String rule, ProxySubject expectedName)
             throws JsonProcessingException {
         DefaultSaslSubjectBuilderService.Config builderConfig = mapper.readValue(rule, DefaultSaslSubjectBuilderService.Config.class);
         sasl(builderConfig,
@@ -299,13 +299,13 @@ class DefaultSaslSubjectBuilderServiceTest {
 
         sasl(builderConfig,
                 "foo-apple",
-                new Subject(new User("apple")));
+                new ProxySubject(new User("apple")));
         sasl(builderConfig,
                 "bar-pear",
-                new Subject(new User("BAR-PEAR")));
+                new ProxySubject(new User("BAR-PEAR")));
         sasl(builderConfig,
                 "",
-                new Subject());
+                new ProxySubject());
     }
 
 }

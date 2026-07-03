@@ -26,7 +26,7 @@ import io.github.nettyplus.leakdetector.junit.NettyLeakDetectorExtension;
 import io.kroxylicious.it.testplugins.ClientAuthAwareLawyer;
 import io.kroxylicious.it.testplugins.ClientAuthAwareLawyerFilter;
 import io.kroxylicious.it.testplugins.ConstantSasl;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.config.NamedFilterDefinition;
 import io.kroxylicious.testing.filter.assertj.KafkaAssertions;
@@ -48,7 +48,7 @@ class ConstantSaslIT {
     private static void doAThing(KafkaCluster cluster,
                                  Topic topic,
                                  Map<String, Object> filterConfig,
-                                 Subject expectedSubject,
+                                 ProxySubject expectedSubject,
                                  boolean expectedClientSaslPresent,
                                  @Nullable String expectedAuthorizedId,
                                  @Nullable String expectedMechanism) {
@@ -108,7 +108,7 @@ class ConstantSaslIT {
         Map<String, Object> filterConfig = Map.of("api", ApiKeys.PRODUCE,
                 "mechanism", mechanism,
                 "authorizedId", authorizedId);
-        doAThing(cluster, topic, filterConfig, new Subject(new User(authorizedId)), true, authorizedId, mechanism);
+        doAThing(cluster, topic, filterConfig, new ProxySubject(new User(authorizedId)), true, authorizedId, mechanism);
     }
 
     @Test
@@ -122,7 +122,7 @@ class ConstantSaslIT {
                 "mechanism", mechanism,
                 "principalType", principalType,
                 "principalName", principalName);
-        doAThing(cluster, topic, filterConfig, new Subject(new User(principalName)), true, principalName, mechanism);
+        doAThing(cluster, topic, filterConfig, new ProxySubject(new User(principalName)), true, principalName, mechanism);
     }
 
     @Test
@@ -135,6 +135,6 @@ class ConstantSaslIT {
                 "mechanism", mechanism,
                 "authorizedId", authorizedId,
                 "exceptionClassName", LoginException.class.getName());
-        doAThing(cluster, topic, filterConfig, Subject.anonymous(), false, null, null);
+        doAThing(cluster, topic, filterConfig, ProxySubject.anonymous(), false, null, null);
     }
 }

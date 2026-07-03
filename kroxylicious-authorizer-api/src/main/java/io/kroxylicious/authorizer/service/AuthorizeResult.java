@@ -14,10 +14,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.authentication.Subject;
 
 /**
- * Represents the outcome of a call to {@link Authorizer#authorize(io.kroxylicious.proxy.authentication.Subject, List)}.
+ * Represents the outcome of a call to {@link Authorizer#authorize(io.kroxylicious.authentication.Subject, List)}.
  * @param subject The subject.
  * @param allowed The allowed actions.
  * @param denied The denied actions.

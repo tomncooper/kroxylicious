@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.SaslSubjectBuilder;
-import io.kroxylicious.proxy.authentication.Subject;
 import io.kroxylicious.proxy.authentication.SubjectBuildingException;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilter;
@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 /**
  * A filter that performs <a href="https://github.com/kroxylicious/design/blob/main/proposals/004-terminology-for-authentication.md#sasl-passthrough-inspection">SASL passthrough inspection</a>.
  * It does this by looking at the requests and responses to infer the client's identity negotiated by the SASL layer. Once the authentication is complete,
- * it uses {@link FilterContext#clientSaslAuthenticationSuccess(String, io.kroxylicious.proxy.authentication.Subject)} or {@link FilterContext#clientSaslAuthenticationFailure(String, String, Exception)} to announce the
+ * it uses {@link FilterContext#clientSaslAuthenticationSuccess(String, io.kroxylicious.proxy.authentication.ProxySubject)} or {@link FilterContext#clientSaslAuthenticationFailure(String, String, Exception)} to announce the
  * result of the authentication to the rest of the filters in the filter chain.
  * <br/>
  * If client reauthentication is in-use (KIP-368), the result of the subsequent re-authentication will be announced using
@@ -325,7 +325,7 @@ class SaslInspectionFilter
                                                                           State.AwaitingAuthenticateResponse state,
                                                                           SaslObserver saslObserver,
                                                                           String authorizationIdFromClient) {
-        CompletionStage<Subject> subjectCompletionStage = subjectBuilder.buildSaslSubject(new SaslSubjectBuilder.Context() {
+        CompletionStage<ProxySubject> subjectCompletionStage = subjectBuilder.buildSaslSubject(new SaslSubjectBuilder.Context() {
             @Override
             public Optional<ClientTlsContext> clientTlsContext() {
                 return context.clientTlsContext();

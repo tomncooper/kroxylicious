@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.filter.RequestFilterResult;
 import io.kroxylicious.proxy.filter.ResponseFilterResult;
@@ -123,7 +123,7 @@ class MockFilterContextTest {
         assertThat(context.getVirtualClusterName()).isEqualTo("virtualCluster");
         assertThat(context.clientSaslContext()).isEmpty();
         assertThat(context.clientTlsContext()).isEmpty();
-        assertThat(context.authenticatedSubject()).isEqualTo(Subject.anonymous());
+        assertThat(context.authenticatedSubject()).isEqualTo(ProxySubject.anonymous());
     }
 
     @Test
@@ -211,7 +211,7 @@ class MockFilterContextTest {
     @Test
     void shouldReturnOverriddenAuthenticatedSubject() {
         // given
-        Subject subject = new Subject(new User("happy"));
+        ProxySubject subject = new ProxySubject(new User("happy"));
         MockFilterContext context = MockFilterContext.builder(HEADER, MESSAGE).withAuthenticatedSubject(subject).build();
 
         // when / then
@@ -763,10 +763,10 @@ class MockFilterContextTest {
     @Test
     void recordsSaslSuccess() {
         MockFilterContext context = MockFilterContext.builder(HEADER, MESSAGE).build();
-        context.clientSaslAuthenticationSuccess("mechanism", Subject.anonymous());
+        context.clientSaslAuthenticationSuccess("mechanism", ProxySubject.anonymous());
 
         assertThat(context.clientSaslGestureInvocations()).hasSize(1)
-                .containsExactly(new AuthenticationSuccess("mechanism", Subject.anonymous()));
+                .containsExactly(new AuthenticationSuccess("mechanism", ProxySubject.anonymous()));
     }
 
     @Test

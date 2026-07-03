@@ -10,11 +10,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Subject;
+import io.kroxylicious.authentication.Unique;
+
 /**
  * <p>Represents an actor in the system.
  * Subjects are composed of a possibly-empty set of identifiers represented as {@link Principal} instances.
- * An anonymous actor is represented by a Subject with an empty set of principals.
- * As a convenience, {@link Subject#anonymous()} returns such a subject.
+ * An anonymous actor is represented by a ProxySubject with an empty set of principals.
+ * As a convenience, {@link ProxySubject#anonymous()} returns such a subject.
  * </p>
  *
  * <p>The principals included in a subject might comprise the following:</p>
@@ -26,15 +30,15 @@ import java.util.stream.Collectors;
  *
  * @param principals the set of identifiers associated with this subject.
  */
-public record Subject(Set<Principal> principals) {
+public record ProxySubject(Set<Principal> principals) implements Subject {
 
-    private static final Subject ANONYMOUS = new Subject(Set.of());
+    private static final ProxySubject ANONYMOUS = new ProxySubject(Set.of());
 
     /**
      * Returns the anonymous subject (no principals).
      * @return the anonymous subject
      */
-    public static Subject anonymous() {
+    public static ProxySubject anonymous() {
         return ANONYMOUS;
     }
 
@@ -42,7 +46,7 @@ public record Subject(Set<Principal> principals) {
      * Creates a subject from the given principals.
      * @param principals the principals
      */
-    public Subject(Principal... principals) {
+    public ProxySubject(Principal... principals) {
         this(Set.of(principals));
     }
 
@@ -50,7 +54,7 @@ public record Subject(Set<Principal> principals) {
      * Creates a subject from the given principal set. Validates that non-empty subjects have exactly one {@link User} principal.
      * @param principals the principals
      */
-    public Subject(Set<Principal> principals) {
+    public ProxySubject(Set<Principal> principals) {
         principals.stream()
                 .collect(Collectors.groupingBy(Object::getClass))
                 .forEach((principalClass, instances) -> {

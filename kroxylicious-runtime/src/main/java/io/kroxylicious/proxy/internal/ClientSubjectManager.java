@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.tag.VisibleForTesting;
@@ -74,7 +74,7 @@ public class ClientSubjectManager implements
     }
 
     private @Nullable String mechanismName;
-    private Subject subject;
+    private ProxySubject subject;
     private @Nullable X509Certificate proxyCertificate;
     private @Nullable X509Certificate clientCertificate;
 
@@ -82,7 +82,7 @@ public class ClientSubjectManager implements
         this.proxyCertificate = null;
         this.clientCertificate = null;
         this.mechanismName = null;
-        this.subject = Subject.anonymous();
+        this.subject = ProxySubject.anonymous();
     }
 
     public void subjectFromTransport(@Nullable SSLSession session,
@@ -99,7 +99,7 @@ public class ClientSubjectManager implements
                 LOGGER.atWarn()
                         .setCause(error)
                         .log("Failed to build subject from transport information; client will be treated as anonymous");
-                this.subject = Subject.anonymous();
+                this.subject = ProxySubject.anonymous();
             }
             this.mechanismName = null;
             whenDoneCallback.run();
@@ -108,18 +108,18 @@ public class ClientSubjectManager implements
 
     void clientSaslAuthenticationSuccess(
                                          String mechanism,
-                                         Subject subject) {
+                                         ProxySubject subject) {
         this.mechanismName = Objects.requireNonNull(mechanism, "mechanism");
         this.subject = Objects.requireNonNull(subject, "subject");
     }
 
-    public Subject authenticatedSubject() {
+    public ProxySubject authenticatedSubject() {
         return this.subject;
     }
 
     void clientSaslAuthenticationFailure() {
         this.mechanismName = null;
-        this.subject = Subject.anonymous();
+        this.subject = ProxySubject.anonymous();
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ClientSubjectManager implements
     @Override
     public String authorizationId() {
         // Note this is only reachable when clientSaslContext() returned non-empty
-        // And currently a Subject must have exactly one User principal
+        // And currently a ProxySubject must have exactly one User principal
         // => this IllegalStateException is never thrown in practice.
         return subject.uniquePrincipalOfType(User.class)
                 .map(User::name)

@@ -34,7 +34,7 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.util.ReferenceCountUtil;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 import io.kroxylicious.proxy.frame.DecodedRequestFrame;
 import io.kroxylicious.proxy.frame.RequestFrame;
@@ -776,7 +776,7 @@ public class ClientConnectionStateMachine {
         return clientSubjectManager.clientTlsContext();
     }
 
-    public void clientSaslAuthenticationSuccess(String mechanism, Subject subject) {
+    public void clientSaslAuthenticationSuccess(String mechanism, ProxySubject subject) {
         clientSubjectManager.clientSaslAuthenticationSuccess(mechanism, subject);
     }
 
@@ -818,7 +818,7 @@ public class ClientConnectionStateMachine {
         tryUnblockClient();
     }
 
-    Subject authenticatedSubject() {
+    ProxySubject authenticatedSubject() {
         return Objects.requireNonNull(clientSubjectManager).authenticatedSubject();
     }
 

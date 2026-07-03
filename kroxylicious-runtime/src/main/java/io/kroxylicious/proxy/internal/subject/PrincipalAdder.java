@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.kroxylicious.proxy.authentication.Principal;
+import io.kroxylicious.authentication.Principal;
 import io.kroxylicious.proxy.authentication.PrincipalFactory;
 
 public record PrincipalAdder(

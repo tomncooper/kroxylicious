@@ -14,7 +14,7 @@ import org.apache.kafka.common.message.RequestHeaderData;
 import org.apache.kafka.common.message.ResponseHeaderData;
 import org.apache.kafka.common.protocol.ApiMessage;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.topology.VirtualNode;
 
 /**
@@ -149,12 +149,12 @@ public interface RouterContext {
      * <p>Depending on configuration, the subject can be based on network-level
      * or Kafka protocol-level information (or both):</p>
      * <ul>
-     *   <li>This will return an anonymous {@code Subject} (one with an empty
+     *   <li>This will return an anonymous {@code ProxySubject} (one with an empty
      *   {@code principals} set) when no authentication is configured, or the
      *   transport layer cannot provide authentication (e.g. TCP or non-mutual
      *   TLS transports).</li>
      *   <li>When client mutual TLS authentication is configured this will
-     *   initially return a non-anonymous {@code Subject} based on the TLS
+     *   initially return a non-anonymous {@code ProxySubject} based on the TLS
      *   certificate presented by the client.</li>
      *   <li>Because of the possibility of <em>reauthentication</em> it is
      *   also possible for the subject to change.</li>
@@ -177,7 +177,7 @@ public interface RouterContext {
      *
      * @return the client subject
      */
-    Subject authenticatedSubject();
+    ProxySubject authenticatedSubject();
 
     /**
      * Begins building a router response that delivers the given response

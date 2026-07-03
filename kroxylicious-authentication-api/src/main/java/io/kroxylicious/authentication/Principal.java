@@ -4,7 +4,7 @@
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package io.kroxylicious.proxy.authentication;
+package io.kroxylicious.authentication;
 
 /**
  * <p>An identifier held by a {@link Subject}.</p>
@@ -14,5 +14,9 @@ package io.kroxylicious.proxy.authentication;
  * (according to {@code equals()}). One easy way to achieve this is to use a {@code record} class with a single {@code name} component.</p>
  */
 public interface Principal {
+    /**
+     * Returns the name of this principal.
+     * @return the name of this principal.
+     */
     String name();
 }

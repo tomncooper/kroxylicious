@@ -24,7 +24,7 @@ import org.apache.kafka.common.protocol.Errors;
 import org.apache.kafka.common.utils.ByteBufferOutputStream;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.RequestFilterResult;
 import io.kroxylicious.proxy.filter.ResponseFilterResult;
@@ -38,11 +38,11 @@ import io.kroxylicious.proxy.tls.ClientTlsContext;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
-record MockFilterContext(ApiMessage header, ApiMessage message, Subject subject, Map<Uuid, String> topicNames, MockUpstream mockUpstream)
+record MockFilterContext(ApiMessage header, ApiMessage message, ProxySubject subject, Map<Uuid, String> topicNames, MockUpstream mockUpstream)
         implements FilterContext {
 
     MockFilterContext {
-        Objects.requireNonNull(subject, "Subject cannot be null");
+        Objects.requireNonNull(subject, "ProxySubject cannot be null");
     }
 
     @NonNull
@@ -139,7 +139,7 @@ record MockFilterContext(ApiMessage header, ApiMessage message, Subject subject,
     }
 
     @Override
-    public void clientSaslAuthenticationSuccess(@NonNull String mechanism, @NonNull Subject subject) {
+    public void clientSaslAuthenticationSuccess(@NonNull String mechanism, @NonNull ProxySubject subject) {
         throw new UnsupportedOperationException();
     }
 
@@ -156,7 +156,7 @@ record MockFilterContext(ApiMessage header, ApiMessage message, Subject subject,
 
     @NonNull
     @Override
-    public Subject authenticatedSubject() {
+    public ProxySubject authenticatedSubject() {
         return subject;
     }
 

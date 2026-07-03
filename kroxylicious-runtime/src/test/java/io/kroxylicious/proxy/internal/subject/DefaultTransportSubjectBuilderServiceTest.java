@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.authentication.TransportSubjectBuilder;
 import io.kroxylicious.proxy.authentication.User;
 import io.kroxylicious.proxy.tls.ClientTlsContext;
@@ -37,7 +37,7 @@ class DefaultTransportSubjectBuilderServiceTest {
 
     private static void tls(DefaultTransportSubjectBuilderService.Config builderConfig,
                             X509Certificate cert,
-                            @Nullable Subject expectedSubject,
+                            @Nullable ProxySubject expectedSubject,
                             @Nullable Exception expectedException) {
         if ((expectedSubject != null) == (expectedException != null)) {
             throw new IllegalArgumentException("These arguments are mutually exclusive.");
@@ -66,7 +66,7 @@ class DefaultTransportSubjectBuilderServiceTest {
         var fut = subject.toCompletableFuture();
         if (expectedSubject != null) {
             Assertions.assertThat(fut.join())
-                    // .extracting(Subject::principals, InstanceOfAssertFactories.set(Principal.class))
+                    // .extracting(ProxySubject::principals, InstanceOfAssertFactories.set(Principal.class))
                     // .singleElement()
                     // .isInstanceOf(User.class)
                     // .extracting(Principal::name, InstanceOfAssertFactories.STRING)
@@ -267,13 +267,13 @@ class DefaultTransportSubjectBuilderServiceTest {
                 Arguments.argumentSet("empty adders", "CN=test,OU=testing", """
                         addPrincipals: []
                         """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("empty mappings", "CN=test,OU=testing", """
                         addPrincipals:
                           - from: clientTlsSubject
                             principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                         """,
-                        new Subject(new User("CN=test,OU=testing")), null),
+                        new ProxySubject(new User("CN=test,OU=testing")), null),
                 Arguments.argumentSet("no match,no else => anonymous", "CN=test,OU=nottesting", """
                         addPrincipals:
                           - from: clientTlsSubject
@@ -281,7 +281,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                               - replaceMatch: /CN=(.*),OU=testing/X$1Y/
                             principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                         """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("no match+else identity", "CN=test,OU=nottesting", """
                         addPrincipals:
                           - from: clientTlsSubject
@@ -290,7 +290,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                               - else: identity
                             principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                         """,
-                        new Subject(new User("CN=test,OU=nottesting")), null),
+                        new ProxySubject(new User("CN=test,OU=nottesting")), null),
                 Arguments.argumentSet("no match+else anonymous", "CN=test,OU=nottesting", """
                         addPrincipals:
                           - from: clientTlsSubject
@@ -299,7 +299,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                               - else: anonymous
                             principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                         """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("multiple", "CN=test,OU=testing", """
                         addPrincipals:
                           - from: clientTlsSubject
@@ -311,7 +311,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                               - replaceMatch: /CN=(.*),OU=(.*)/X$2Y/L
                             principalFactory: io.kroxylicious.proxy.internal.subject.UnitFactory
                         """,
-                        new Subject(new User("XTESTY"), new Unit("xtestingy")), null),
+                        new ProxySubject(new User("XTESTY"), new Unit("xtestingy")), null),
                 Arguments.argumentSet("replace, no flags", "CN=test,OU=testing", """
                         addPrincipals:
                           - from: clientTlsSubject
@@ -319,7 +319,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                               - replaceMatch: /CN=(.*),OU=testing/X$1Y/
                             principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                         """,
-                        new Subject(new User("XtestY")), null),
+                        new ProxySubject(new User("XtestY")), null),
                 Arguments.argumentSet("replace+lowercase",
                         "CN=test,OU=testing",
                         """
@@ -329,7 +329,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=(.*),OU=testing/X$1Y/L
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("xtesty")), null),
+                        new ProxySubject(new User("xtesty")), null),
                 Arguments.argumentSet("replace+uppercase",
                         "CN=test,OU=testing",
                         """
@@ -339,14 +339,14 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=(.*),OU=testing/X$1Y/U
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTESTY")), null)
+                        new ProxySubject(new User("XTESTY")), null)
         // TODO The other ways of formatting the X500 name (i.e. not CANONICAL etc)
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithX500Subjects(String x500Principal, String rule, Subject expectedSubject, Exception expectedException) throws JsonProcessingException {
+    void rulesShouldWorkWithX500Subjects(String x500Principal, String rule, ProxySubject expectedSubject, Exception expectedException) throws JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectX500Principal()).thenReturn(new X500Principal(x500Principal));
 
@@ -364,14 +364,14 @@ class DefaultTransportSubjectBuilderServiceTest {
                         "test@testing.example.com", """
                                 addPrincipals: []
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("empty mappings",
                         "test@testing.example.com", """
                                 addPrincipals:
                                   - from: clientTlsSanRfc822Name
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("test@testing.example.com")), null),
+                        new ProxySubject(new User("test@testing.example.com")), null),
                 Arguments.argumentSet("no match,no else => anonymous",
                         "test@nottesting.example.org",
                         """
@@ -381,7 +381,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)@(.*)[.]example[.]com/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("no match+else identity",
                         "test@nottesting.example.org",
                         """
@@ -392,7 +392,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: identity
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("test@nottesting.example.org")), null),
+                        new ProxySubject(new User("test@nottesting.example.org")), null),
                 Arguments.argumentSet("no match+else anonymous",
                         "test@testing.example.org",
                         """
@@ -403,7 +403,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: anonymous
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("multiple",
                         "test@testing.example.com",
                         """
@@ -417,7 +417,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)@(.*)[.]example[.]com/X$2Y/L
                                     principalFactory: io.kroxylicious.proxy.internal.subject.UnitFactory
                                 """,
-                        new Subject(new User("XTESTY"), new Unit("xtestingy")), null),
+                        new ProxySubject(new User("XTESTY"), new Unit("xtestingy")), null),
                 Arguments.argumentSet("replace, no flags",
                         "test@testing.example.com",
                         """
@@ -427,7 +427,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)@(.*)[.]example[.]com/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XtestY")), null),
+                        new ProxySubject(new User("XtestY")), null),
                 Arguments.argumentSet("replace+lowercase",
                         "test@testing.example.com",
                         """
@@ -437,7 +437,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)@(.*)[.]example[.]com/X$1Y/L
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("xtesty")), null),
+                        new ProxySubject(new User("xtesty")), null),
                 Arguments.argumentSet("replace+uppercase",
                         "test@testing.example.com",
                         """
@@ -447,12 +447,12 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)@(.*)[.]example[.]com/X$1Y/U
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTESTY")), null));
+                        new ProxySubject(new User("XTESTY")), null));
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSanRfc822Names(String rfc822, String rule, Subject expectedName, Exception expectedException)
+    void rulesShouldWorkWithSanRfc822Names(String rfc822, String rule, ProxySubject expectedName, Exception expectedException)
             throws CertificateParsingException, JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectAlternativeNames()).thenReturn(List.of(List.of(TlsCertificateExtractor.Asn1SanNameType.RFC822.asn1Value, rfc822)));
@@ -471,7 +471,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                         """
                                 addPrincipals: []
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("empty mappings",
                         "test.testing.example.com",
                         """
@@ -479,7 +479,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                   - from: clientTlsSanDnsName
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("test.testing.example.com")), null),
+                        new ProxySubject(new User("test.testing.example.com")), null),
                 Arguments.argumentSet("no match,no else => anonymous",
                         "test.testing.example.org",
                         """
@@ -489,7 +489,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)[.](.*)[.]example[.]com/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("no match+else identity",
                         "test.testing.example.org",
                         """
@@ -500,7 +500,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: identity
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("test.testing.example.org")), null),
+                        new ProxySubject(new User("test.testing.example.org")), null),
                 Arguments.argumentSet("no match+else anonymous",
                         "test.testing.example.org",
                         """
@@ -511,7 +511,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: anonymous
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("multiple",
                         "test.testing.example.com",
                         """
@@ -525,7 +525,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)[.](.*)[.]example[.]com/X$2Y/L
                                     principalFactory: io.kroxylicious.proxy.internal.subject.UnitFactory
                                 """,
-                        new Subject(new User("XTESTY"), new Unit("xtestingy")), null),
+                        new ProxySubject(new User("XTESTY"), new Unit("xtestingy")), null),
                 Arguments.argumentSet("replace, no flags",
                         "test.testing.example.com",
                         """
@@ -535,7 +535,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)[.](.*)[.]example[.]com/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XtestY")), null),
+                        new ProxySubject(new User("XtestY")), null),
                 Arguments.argumentSet("replace+lowercase",
                         "test.testing.example.com",
                         """
@@ -545,7 +545,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)[.](.*)[.]example[.]com/X$1Y/L
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("xtesty")), null),
+                        new ProxySubject(new User("xtesty")), null),
                 Arguments.argumentSet("replace+uppercase",
                         "test.testing.example.com",
                         """
@@ -555,12 +555,12 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /(.*)[.](.*)[.]example[.]com/X$1Y/U
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTESTY")), null));
+                        new ProxySubject(new User("XTESTY")), null));
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSanDnsNames(String rfc822, String rule, Subject expectedName, Exception expectedException)
+    void rulesShouldWorkWithSanDnsNames(String rfc822, String rule, ProxySubject expectedName, Exception expectedException)
             throws CertificateParsingException, JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectAlternativeNames()).thenReturn(List.of(List.of(TlsCertificateExtractor.Asn1SanNameType.DNS.asn1Value, rfc822)));
@@ -579,7 +579,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                         """
                                 addPrincipals: []
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("empty mappings",
                         "CN=Test,OU=Testing,O=Example Corp,C=GB",
                         """
@@ -587,7 +587,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                   - from: clientTlsSanDirName
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("CN=Test,OU=Testing,O=Example Corp,C=GB")), null),
+                        new ProxySubject(new User("CN=Test,OU=Testing,O=Example Corp,C=GB")), null),
                 Arguments.argumentSet("no match,no else => anonymous",
                         "CN=Test,OU=Testing,O=Example Corp,C=US",
                         """
@@ -597,7 +597,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=([^,]*),OU=([^,]*),.*,C=GB/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("no match+else identity",
                         "CN=Test,OU=Testing,O=Example Corp,C=US",
                         """
@@ -608,7 +608,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: identity
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("CN=Test,OU=Testing,O=Example Corp,C=US")), null),
+                        new ProxySubject(new User("CN=Test,OU=Testing,O=Example Corp,C=US")), null),
                 Arguments.argumentSet("no match+else anonymous",
                         "CN=Test,OU=Testing,O=Example Corp,C=US",
                         """
@@ -619,7 +619,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: anonymous
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("multiple",
                         "CN=Test,OU=Testing,O=Example Corp,C=GB",
                         """
@@ -633,7 +633,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=([^,]*),OU=([^,]*),.*,C=GB/X$2Y/L
                                     principalFactory: io.kroxylicious.proxy.internal.subject.UnitFactory
                                 """,
-                        new Subject(new User("XTESTY"), new Unit("xtestingy")), null),
+                        new ProxySubject(new User("XTESTY"), new Unit("xtestingy")), null),
                 Arguments.argumentSet("replace, no flags",
                         "CN=Test,OU=Testing,O=Example Corp,C=GB",
                         """
@@ -643,7 +643,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=([^,]*),OU=([^,]*),.*,C=GB/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTestY")), null),
+                        new ProxySubject(new User("XTestY")), null),
                 Arguments.argumentSet("replace+lowercase",
                         "CN=Test,OU=Testing,O=Example Corp,C=GB",
                         """
@@ -653,7 +653,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=([^,]*),OU=([^,]*),.*,C=GB/X$1Y/L
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("xtesty")), null),
+                        new ProxySubject(new User("xtesty")), null),
                 Arguments.argumentSet("replace+uppercase",
                         "CN=Test,OU=Testing,O=Example Corp,C=GB",
                         """
@@ -663,12 +663,12 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /CN=([^,]*),OU=([^,]*),.*,C=GB/X$1Y/U
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTESTY")), null));
+                        new ProxySubject(new User("XTESTY")), null));
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSanDirNames(String rfc822, String rule, Subject expectedName, Exception expectedException)
+    void rulesShouldWorkWithSanDirNames(String rfc822, String rule, ProxySubject expectedName, Exception expectedException)
             throws CertificateParsingException, JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectAlternativeNames()).thenReturn(List.of(List.of(TlsCertificateExtractor.Asn1SanNameType.DIR_NAME.asn1Value, rfc822)));
@@ -687,7 +687,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                         """
                                 addPrincipals: []
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("empty mappings",
                         "scheme://test.example.com/testing",
                         """
@@ -695,7 +695,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                   - from: clientTlsSanUri
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("scheme://test.example.com/testing")), null),
+                        new ProxySubject(new User("scheme://test.example.com/testing")), null),
                 Arguments.argumentSet("no match,no else => anonymous",
                         "scheme://test.example.org/testing",
                         """
@@ -705,7 +705,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: =scheme://(.*)[.]example[.]com/(.*)=X$1Y=
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("no match+else identity",
                         "scheme://test.example.org/testing",
                         """
@@ -716,7 +716,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: identity
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("scheme://test.example.org/testing")), null),
+                        new ProxySubject(new User("scheme://test.example.org/testing")), null),
                 Arguments.argumentSet("no match+else anonymous",
                         "scheme://test.example.org/testing",
                         """
@@ -727,7 +727,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - else: anonymous
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(), null),
+                        new ProxySubject(), null),
                 Arguments.argumentSet("multiple",
                         "scheme://test.example.com/testing",
                         """
@@ -741,7 +741,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: =scheme://(.*)[.]example[.]com/(.*)=X$2Y=L
                                     principalFactory: io.kroxylicious.proxy.internal.subject.UnitFactory
                                 """,
-                        new Subject(new User("XTESTY"), new Unit("xtestingy")), null),
+                        new ProxySubject(new User("XTESTY"), new Unit("xtestingy")), null),
                 Arguments.argumentSet("replace, no flags",
                         "scheme://test.example.com/testing",
                         """
@@ -751,7 +751,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: =scheme://(.*)[.]example[.]com/(.*)=X$1Y=
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XtestY")), null),
+                        new ProxySubject(new User("XtestY")), null),
                 Arguments.argumentSet("replace+lowercase",
                         "scheme://test.example.com/testing",
                         """
@@ -761,7 +761,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: =scheme://(.*)[.]example[.]com/(.*)=X$1Y=L
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("xtesty")), null),
+                        new ProxySubject(new User("xtesty")), null),
                 Arguments.argumentSet("replace+uppercase",
                         "scheme://test.example.com/testing",
                         """
@@ -771,12 +771,12 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: =scheme://(.*)[.]example[.]com/(.*)=X$1Y=U
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("XTESTY")), null));
+                        new ProxySubject(new User("XTESTY")), null));
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSanUri(String rfc822, String rule, Subject expectedName, Exception expectedException)
+    void rulesShouldWorkWithSanUri(String rfc822, String rule, ProxySubject expectedName, Exception expectedException)
             throws CertificateParsingException, JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectAlternativeNames()).thenReturn(List.of(List.of(TlsCertificateExtractor.Asn1SanNameType.URI.asn1Value, rfc822)));
@@ -799,7 +799,7 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /123.123.123.([0-9]+)/foo-$1/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("foo-80")), null),
+                        new ProxySubject(new User("foo-80")), null),
                 Arguments.argumentSet("ipv6",
                         "a1:a2:a3:a4:a5:a6:a7:a8",
                         """
@@ -809,14 +809,14 @@ class DefaultTransportSubjectBuilderServiceTest {
                                       - replaceMatch: /[0-9a-f]{2}:(.*):[0-9a-f]{2}:[0-9a-f]{2}/X$1Y/
                                     principalFactory: io.kroxylicious.proxy.authentication.UserFactory
                                 """,
-                        new Subject(new User("Xa2:a3:a4:a5:a6Y")), null)
+                        new ProxySubject(new User("Xa2:a3:a4:a5:a6Y")), null)
 
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void rulesShouldWorkWithSanIpAddress(String rfc822, String rule, Subject expectedName, Exception expectedException)
+    void rulesShouldWorkWithSanIpAddress(String rfc822, String rule, ProxySubject expectedName, Exception expectedException)
             throws CertificateParsingException, JsonProcessingException {
         var cert = Mockito.mock(X509Certificate.class);
         Mockito.when(cert.getSubjectAlternativeNames()).thenReturn(List.of(List.of(TlsCertificateExtractor.Asn1SanNameType.IP_ADDRESS.asn1Value, rfc822)));

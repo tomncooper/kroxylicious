@@ -27,6 +27,10 @@
         <!-- project dependencies - runtime and compile -->
         <dependency>
             <groupId>io.kroxylicious</groupId>
+            <artifactId>kroxylicious-authentication-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.kroxylicious</groupId>
             <artifactId>kroxylicious-api</artifactId>
         </dependency>
         <dependency>

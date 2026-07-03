@@ -12,7 +12,7 @@ import java.util.concurrent.CompletionStage;
 import io.kroxylicious.proxy.tls.ClientTlsContext;
 
 /**
- * <p>Builds a {@link Subject} based on information available at the transport layer,
+ * <p>Builds a {@link ProxySubject} based on information available at the transport layer,
  * before any requests have been received from the client.</p>
  *
  * <p>A {@code TransportSubjectBuilder} instance is constructed by a {@link TransportSubjectBuilderService},
@@ -29,7 +29,7 @@ public interface TransportSubjectBuilder {
      * @return The Subject. The returned stage should fail with an {@link SubjectBuildingException} if the builder was not able to
      * build a subject.
      */
-    CompletionStage<Subject> buildTransportSubject(Context context);
+    CompletionStage<ProxySubject> buildTransportSubject(Context context);
 
     interface Context {
         /**

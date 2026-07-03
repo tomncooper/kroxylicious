@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import io.kroxylicious.authentication.Principal;
+import io.kroxylicious.authentication.Unique;
 import io.kroxylicious.filter.entityisolation.EntityIsolation.EntityType;
-import io.kroxylicious.proxy.authentication.Principal;
-import io.kroxylicious.proxy.authentication.Unique;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 

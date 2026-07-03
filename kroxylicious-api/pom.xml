@@ -31,6 +31,12 @@
     <description>API for filters, and some dependant APIs</description>
 
     <dependencies>
+        <!-- kroxylicious dependencies -->
+        <dependency>
+            <groupId>io.kroxylicious</groupId>
+            <artifactId>kroxylicious-authentication-api</artifactId>
+        </dependency>
+
         <!-- third party dependencies - runtime and compile -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -184,8 +190,20 @@
                                     <exclude>io.kroxylicious.proxy.filter.ResponseFilter#onResponse(org.apache.kafka.common.protocol.ApiKeys, org.apache.kafka.common.message.ResponseHeaderData, org.apache.kafka.common.protocol.ApiMessage, io.kroxylicious.proxy.filter.FilterContext)</exclude>
                                     <!-- The following method was deprecated since 0.18 and removed at 0.21.0, see https://github.com/kroxylicious/kroxylicious/issues/3620 -->
                                     <exclude>io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(java.lang.String, java.lang.String)</exclude>
+                                    <!-- The following exclusions relate to extracting authentication concepts into kroxylicious-authentication-api -->
+                                    <exclude>io.kroxylicious.proxy.authentication.Unique</exclude>
+                                    <exclude>io.kroxylicious.proxy.authentication.Principal</exclude>
+                                    <exclude>io.kroxylicious.proxy.authentication.Subject</exclude>
+                                    <exclude>io.kroxylicious.proxy.authentication.PrincipalFactory#newPrincipal(java.lang.String)</exclude>
+                                    <exclude>io.kroxylicious.proxy.authentication.TransportSubjectBuilder#buildTransportSubject(io.kroxylicious.proxy.authentication.TransportSubjectBuilder$Context)</exclude>
+                                    <exclude>io.kroxylicious.proxy.authentication.SaslSubjectBuilder#buildSaslSubject(io.kroxylicious.proxy.authentication.SaslSubjectBuilder$Context)</exclude>
+                                    <exclude>io.kroxylicious.proxy.filter.FilterContext#clientSaslAuthenticationSuccess(java.lang.String, io.kroxylicious.proxy.authentication.Subject)</exclude>
+                                    <exclude>io.kroxylicious.proxy.filter.FilterContext#authenticatedSubject()</exclude>
+                                    <exclude>io.kroxylicious.proxy.router.RouterContext#authenticatedSubject()</exclude>
                                 </excludes>
-                                <!-- see documentation -->
+                                <ignoreMissingClassesByRegularExpressions>
+                                    <ignoreMissingClassesByRegularExpression>io\.kroxylicious\.proxy\.authentication\.Principal</ignoreMissingClassesByRegularExpression>
+                                </ignoreMissingClassesByRegularExpressions>
                             </parameter>
                         </configuration>
                         <executions>

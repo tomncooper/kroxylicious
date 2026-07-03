@@ -32,7 +32,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
 import io.kroxylicious.proxy.authentication.ClientSaslContext;
-import io.kroxylicious.proxy.authentication.Subject;
+import io.kroxylicious.proxy.authentication.ProxySubject;
 import io.kroxylicious.proxy.filter.Filter;
 import io.kroxylicious.proxy.filter.FilterContext;
 import io.kroxylicious.proxy.filter.FilterResult;
@@ -605,7 +605,7 @@ public class FilterHandler extends ChannelDuplexHandler {
         private final DecodedFrame<?, ?> decodedFrame;
 
         @Override
-        public Subject authenticatedSubject() {
+        public ProxySubject authenticatedSubject() {
             return clientConnectionStateMachine.authenticatedSubject();
         }
 
@@ -648,7 +648,7 @@ public class FilterHandler extends ChannelDuplexHandler {
 
         @Override
         public void clientSaslAuthenticationSuccess(String mechanism,
-                                                    Subject subject) {
+                                                    ProxySubject subject) {
             log(INFO)
                     .addKeyValue("mechanism", mechanism)
                     .addKeyValue("subject", subject)
