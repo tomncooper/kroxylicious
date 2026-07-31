@@ -1,0 +1,14 @@
+title: "feat(identity-api): extract lightweight identity types for standalone authorizer use"
+type: added
+important_notes:
+  - |
+    New `kroxylicious-identity-api` module provides `Principal`, `Subject`, `Identity`, and
+    `@SingularPrincipal` in the `io.kroxylicious.identity` package with zero heavyweight dependencies.
+  - |
+    **Breaking:** `Authorizer.authorize()` and `AuthorizeResult.subject` parameter types changed from
+    `io.kroxylicious.proxy.authentication.Subject` to `io.kroxylicious.identity.Identity`.
+    Authorizer implementations must update their `authorize()` method signature.
+    The fix is mechanical — change one import and the parameter type.
+  - |
+    `io.kroxylicious.proxy.authentication.Subject`, `Principal`, and `@Unique` are deprecated.
+    Use the types in `io.kroxylicious.identity` instead. The deprecated types will be removed at 1.0.

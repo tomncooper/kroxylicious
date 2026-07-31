@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  * and expresses the rules using naturalish language, according to a simple grammar
  * (see {@code src/main/antlr4/io/kroxylicious/authorizer/provider/acl/parser/AclRules.g4}).
  */
+@SuppressWarnings("deprecation")
 @Plugin(configType = AclAuthorizerConfig.class)
 public class AclAuthorizerService implements AuthorizerService<AclAuthorizerConfig> {
 

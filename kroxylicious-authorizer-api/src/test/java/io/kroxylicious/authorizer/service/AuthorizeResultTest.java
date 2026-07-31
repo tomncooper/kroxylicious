@@ -12,9 +12,9 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.kroxylicious.proxy.authentication.Subject;
-import io.kroxylicious.proxy.authentication.User;
+import io.kroxylicious.identity.Subject;
 
+@SuppressWarnings("deprecation")
 class AuthorizeResultTest {
 
     enum TestResource implements ResourceType<TestResource> {
@@ -23,7 +23,7 @@ class AuthorizeResultTest {
         AETHERIFY
     }
 
-    Subject subject = new Subject(new User("alice"));
+    Subject subject = new Subject(new TestPrincipal("alice"));
     Action foo = new Action(TestResource.SQUIDGE, "foo");
     Action bar = new Action(TestResource.SQUIDGE, "bar");
     Action baz = new Action(TestResource.TESSELLATE, "baz");

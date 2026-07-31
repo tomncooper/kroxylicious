@@ -12,5 +12,5 @@ package io.kroxylicious.proxy.authentication;
  * TLS or SASL.
  * @param name The name of the user.
  */
-@Unique
+@io.kroxylicious.identity.SingularPrincipal
 public record User(String name) implements Principal {}

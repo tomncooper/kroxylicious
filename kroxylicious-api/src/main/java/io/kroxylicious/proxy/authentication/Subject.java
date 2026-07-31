@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.kroxylicious.identity.Identity;
+import io.kroxylicious.identity.SingularPrincipal;
+
 /**
  * <p>Represents an actor in the system.
  * Subjects are composed of a possibly-empty set of identifiers represented as {@link Principal} instances.
@@ -26,7 +29,9 @@ import java.util.stream.Collectors;
  *
  * @param principals the set of identifiers associated with this subject.
  */
-public record Subject(Set<Principal> principals) {
+@Deprecated
+@SuppressWarnings("deprecation")
+public record Subject(Set<Principal> principals) implements Identity {
 
     private static final Subject ANONYMOUS = new Subject(Set.of());
 
@@ -54,11 +59,11 @@ public record Subject(Set<Principal> principals) {
         principals.stream()
                 .collect(Collectors.groupingBy(Object::getClass))
                 .forEach((principalClass, instances) -> {
-                    if (principalClass.isAnnotationPresent(Unique.class) && instances.size() > 1) {
+                    if (isSingularPrincipal(principalClass) && instances.size() > 1) {
                         throw new IllegalArgumentException(
-                                instances.size() + " principals of " + principalClass + " were found, but " + principalClass + " is annotated with " + Unique.class);
+                                instances.size() + " principals of " + principalClass + " were found, but " + principalClass + " is annotated with "
+                                        + singularAnnotationOn(principalClass));
                     }
-
                 });
         Optional<User> user = uniquePrincipalOfType(principals, User.class);
         if (!principals.isEmpty() && user.isEmpty()) {
@@ -73,7 +78,8 @@ public record Subject(Set<Principal> principals) {
      * @param <P> the principal type
      * @return the principal, or empty
      */
-    public <P extends Principal> Optional<P> uniquePrincipalOfType(Class<P> uniquePrincipalType) {
+    @Override
+    public <P extends io.kroxylicious.identity.Principal> Optional<P> uniquePrincipalOfType(Class<P> uniquePrincipalType) {
         return uniquePrincipalOfType(this.principals, uniquePrincipalType);
     }
 
@@ -81,20 +87,37 @@ public record Subject(Set<Principal> principals) {
      * Returns whether this is the anonymous subject.
      * @return true if this subject has no principals
      */
+    @Override
     public boolean isAnonymous() {
         return this.principals.isEmpty();
     }
 
-    private static <P extends Principal> Optional<P> uniquePrincipalOfType(Set<Principal> principals, Class<P> uniquePrincipalType) {
-        if (uniquePrincipalType.isAnnotationPresent(Unique.class)) {
+    private static <P extends io.kroxylicious.identity.Principal> Optional<P> uniquePrincipalOfType(Set<? extends io.kroxylicious.identity.Principal> principals,
+                                                                                                    Class<P> uniquePrincipalType) {
+        if (isSingularPrincipal(uniquePrincipalType)) {
             return principals.stream()
                     .filter(uniquePrincipalType::isInstance)
                     .map(uniquePrincipalType::cast)
                     .findFirst();
         }
         else {
-            throw new IllegalArgumentException(uniquePrincipalType + " is not annotated with " + Unique.class);
+            throw new IllegalArgumentException(uniquePrincipalType + " is not annotated with " + singularAnnotationExpected());
         }
+    }
+
+    private static boolean isSingularPrincipal(Class<?> principalClass) {
+        return principalClass.isAnnotationPresent(SingularPrincipal.class) || principalClass.isAnnotationPresent(Unique.class);
+    }
+
+    private static Class<?> singularAnnotationOn(Class<?> principalClass) {
+        if (principalClass.isAnnotationPresent(SingularPrincipal.class)) {
+            return SingularPrincipal.class;
+        }
+        return Unique.class;
+    }
+
+    private static String singularAnnotationExpected() {
+        return SingularPrincipal.class + " or " + Unique.class;
     }
 
     /**
@@ -103,7 +126,8 @@ public record Subject(Set<Principal> principals) {
      * @param <P> the principal type
      * @return the matching principals
      */
-    public <P extends Principal> Set<P> allPrincipalsOfType(Class<P> principalType) {
+    @Override
+    public <P extends io.kroxylicious.identity.Principal> Set<P> allPrincipalsOfType(Class<P> principalType) {
         return this.principals.stream()
                 .filter(principalType::isInstance)
                 .map(principalType::cast)

@@ -613,7 +613,6 @@
          Enforced by the module-profile lint check. -->
     <modules/>
 
-
     <build>
         <!-- Keep alphabetic order -->
         <pluginManagement>
