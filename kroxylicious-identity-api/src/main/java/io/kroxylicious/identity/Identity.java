@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @deprecated This bridge interface will be removed at 1.0. Use {@link Subject} directly.
  */
-@Deprecated
+@Deprecated(since = "0.24.0", forRemoval = true)
 public interface Identity {
 
     /**

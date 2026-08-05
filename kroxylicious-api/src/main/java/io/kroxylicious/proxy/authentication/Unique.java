@@ -16,8 +16,10 @@ import java.lang.annotation.Target;
  * have a single instance present in a {@link Subject}'s {@code principals}.</p>
  *
  * <p>Annotated classes may then be used with {@link Subject#uniquePrincipalOfType(Class)}.</p>
+ *
+ * @deprecated Use {@link io.kroxylicious.identity.SingularPrincipal} instead. Will be removed at 1.0.
  */
-@Deprecated
+@Deprecated(since = "0.24.0", forRemoval = true)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Unique {

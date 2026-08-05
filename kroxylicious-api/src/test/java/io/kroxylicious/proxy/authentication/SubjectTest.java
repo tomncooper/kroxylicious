@@ -32,7 +32,7 @@ class SubjectTest {
         Assertions.assertThatThrownBy(() -> new Subject(user1, user2))
                 .hasMessage("2 principals of class io.kroxylicious.proxy.authentication.User were found, "
                         + "but class io.kroxylicious.proxy.authentication.User is annotated with interface "
-                        + "io.kroxylicious.identity.SingularPrincipal");
+                        + "io.kroxylicious.proxy.authentication.Unique");
 
         Assertions.assertThatThrownBy(() -> new Subject(user1, unique, unique2))
                 .hasMessage("2 principals of class io.kroxylicious.proxy.authentication.FakeUniquePrincipal were found, "
@@ -56,7 +56,7 @@ class SubjectTest {
         Assertions.assertThatThrownBy(() -> subject.uniquePrincipalOfType(FakeMultiplePrincipal.class))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("class io.kroxylicious.proxy.authentication.FakeMultiplePrincipal is not annotated with")
-                .hasMessageContaining("io.kroxylicious.identity.SingularPrincipal");
+                .hasMessageContaining("io.kroxylicious.proxy.authentication.Unique");
 
     }
 
