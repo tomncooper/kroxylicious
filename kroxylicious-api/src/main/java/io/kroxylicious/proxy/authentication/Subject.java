@@ -30,6 +30,7 @@ import io.kroxylicious.identity.Identity;
  * @deprecated Use {@link io.kroxylicious.identity.Subject} instead. Will be removed at 1.0.
  */
 @Deprecated(since = "0.24.0", forRemoval = true)
+@SuppressWarnings("deprecation")
 public record Subject(Set<Principal> principals) implements Identity {
 
     private static final Subject ANONYMOUS = new Subject(Set.of());
