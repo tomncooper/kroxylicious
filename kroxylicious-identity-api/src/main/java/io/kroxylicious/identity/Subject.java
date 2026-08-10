@@ -7,7 +7,6 @@
 package io.kroxylicious.identity;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * <p>Represents an actor in the system.
@@ -55,15 +54,7 @@ public record Subject(Set<? extends Principal> principals) implements Identity {
      * @param principals the principals
      */
     public Subject(Set<? extends Principal> principals) {
-        principals.stream()
-                .collect(Collectors.groupingBy(Object::getClass))
-                .forEach((principalClass, instances) -> {
-                    if (principalClass.isAnnotationPresent(SingularPrincipal.class) && instances.size() > 1) {
-                        throw new IllegalArgumentException(
-                                instances.size() + " principals of " + principalClass + " were found, but " + principalClass + " is annotated with "
-                                        + SingularPrincipal.class);
-                    }
-                });
+        SingularPrincipals.validateUniqueness(principals);
         this.principals = Set.copyOf(principals);
     }
 }

@@ -36,6 +36,7 @@
         <module>../kroxylicious-krpc-plugin</module>
         <module>../kroxylicious-kafka-message-tools</module>
         <module>../kroxylicious-bom</module>
+        <module>../kroxylicious-identity-api</module>
         <module>../kroxylicious-api</module>
         <module>../kroxylicious-integration-test-support</module>
         <module>../kroxylicious-runtime</module>

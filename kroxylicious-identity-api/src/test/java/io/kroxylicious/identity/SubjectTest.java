@@ -16,6 +16,8 @@ class SubjectTest {
 
     FakeSingularPrincipal singular = new FakeSingularPrincipal("name");
     FakeSingularPrincipal singular2 = new FakeSingularPrincipal("name2");
+    FakeMetaSingularPrincipal metaSingular = new FakeMetaSingularPrincipal("meta");
+    FakeMetaSingularPrincipal metaSingular2 = new FakeMetaSingularPrincipal("meta2");
     FakeMultiplePrincipal foo = new FakeMultiplePrincipal("foo");
     FakeMultiplePrincipal bar = new FakeMultiplePrincipal("bar");
 
@@ -27,7 +29,7 @@ class SubjectTest {
         Assertions.assertThatThrownBy(() -> new Subject(singular, singular2))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("2 principals of class io.kroxylicious.identity.FakeSingularPrincipal were found")
-                .hasMessageContaining("is annotated with interface io.kroxylicious.identity.SingularPrincipal");
+                .hasMessageContaining("is a singular principal type");
     }
 
     @Test
@@ -70,7 +72,28 @@ class SubjectTest {
         // Then
         Assertions.assertThatThrownBy(() -> subject.uniquePrincipalOfType(FakeMultiplePrincipal.class))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("is not annotated with interface io.kroxylicious.identity.SingularPrincipal");
+                .hasMessageContaining("is not a singular principal type");
+    }
+
+    @Test
+    void metaAnnotatedSingularUniquenessIsEnforced() {
+        // Given
+        // When
+        // Then
+        Assertions.assertThatThrownBy(() -> new Subject(metaSingular, metaSingular2))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("2 principals of class io.kroxylicious.identity.FakeMetaSingularPrincipal were found")
+                .hasMessageContaining("is a singular principal type");
+    }
+
+    @Test
+    void canExtractMetaAnnotatedSingularPrincipals() {
+        // Given
+        Subject subject = new Subject(metaSingular, foo);
+
+        // When
+        // Then
+        Assertions.assertThat(subject.uniquePrincipalOfType(FakeMetaSingularPrincipal.class)).hasValue(metaSingular);
     }
 
     @Test

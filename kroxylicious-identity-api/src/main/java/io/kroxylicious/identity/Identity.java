@@ -36,8 +36,8 @@ public interface Identity {
      * @throws IllegalArgumentException if the type is not annotated with {@link SingularPrincipal}
      */
     default <P extends Principal> Optional<P> uniquePrincipalOfType(Class<P> uniquePrincipalType) {
-        if (!uniquePrincipalType.isAnnotationPresent(SingularPrincipal.class)) {
-            throw new IllegalArgumentException(uniquePrincipalType + " is not annotated with " + SingularPrincipal.class);
+        if (!SingularPrincipals.isSingular(uniquePrincipalType)) {
+            throw new IllegalArgumentException(uniquePrincipalType + " is not a singular principal type");
         }
         return principals().stream()
                 .filter(uniquePrincipalType::isInstance)

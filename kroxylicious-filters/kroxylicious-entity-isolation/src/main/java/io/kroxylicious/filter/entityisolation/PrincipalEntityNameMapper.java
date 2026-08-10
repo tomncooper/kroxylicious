@@ -12,8 +12,8 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import io.kroxylicious.filter.entityisolation.EntityIsolation.EntityType;
+import io.kroxylicious.identity.SingularPrincipals;
 import io.kroxylicious.proxy.authentication.Principal;
-import io.kroxylicious.proxy.authentication.Unique;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 
@@ -45,8 +45,8 @@ class PrincipalEntityNameMapper implements EntityNameMapper {
     PrincipalEntityNameMapper(Class<? extends Principal> uniquePrincipalType, String separator) {
         this.uniquePrincipalType = Objects.requireNonNull(uniquePrincipalType);
         this.separator = Objects.requireNonNull(separator);
-        if (!uniquePrincipalType.isAnnotationPresent(Unique.class)) {
-            throw new IllegalArgumentException(uniquePrincipalType.getName() + " is not a unique principal type.");
+        if (!SingularPrincipals.isSingular(uniquePrincipalType)) {
+            throw new IllegalArgumentException(uniquePrincipalType.getName() + " is not a singular principal type.");
         }
         if (separator.isEmpty() || isIllegalKafkaName(separator)) {
             throw new IllegalArgumentException("'%s' is an unacceptable separator.".formatted(separator));

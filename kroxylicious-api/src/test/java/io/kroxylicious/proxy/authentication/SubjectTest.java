@@ -11,6 +11,7 @@ import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation")
 class SubjectTest {
 
     User user1 = new User("name");
@@ -18,6 +19,7 @@ class SubjectTest {
 
     FakeUniquePrincipal unique = new FakeUniquePrincipal("name");
     FakeUniquePrincipal unique2 = new FakeUniquePrincipal("name2");
+    FakeSingularOnlyPrincipal singularOnly = new FakeSingularOnlyPrincipal("singular");
     FakeMultiplePrincipal foo = new FakeMultiplePrincipal("foo");
     FakeMultiplePrincipal bar = new FakeMultiplePrincipal("bar");
 
@@ -29,15 +31,18 @@ class SubjectTest {
 
     @Test
     void uniquenessIsEnforced() {
+        // Given
+        // When
+        // Then
         Assertions.assertThatThrownBy(() -> new Subject(user1, user2))
-                .hasMessage("2 principals of class io.kroxylicious.proxy.authentication.User were found, "
-                        + "but class io.kroxylicious.proxy.authentication.User is annotated with interface "
-                        + "io.kroxylicious.proxy.authentication.Unique");
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("2 principals of class io.kroxylicious.proxy.authentication.User were found")
+                .hasMessageContaining("is a singular principal type");
 
         Assertions.assertThatThrownBy(() -> new Subject(user1, unique, unique2))
-                .hasMessage("2 principals of class io.kroxylicious.proxy.authentication.FakeUniquePrincipal were found, "
-                        + "but class io.kroxylicious.proxy.authentication.FakeUniquePrincipal is annotated with interface "
-                        + "io.kroxylicious.proxy.authentication.Unique");
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("2 principals of class io.kroxylicious.proxy.authentication.FakeUniquePrincipal were found")
+                .hasMessageContaining("is a singular principal type");
     }
 
     @Test
@@ -51,13 +56,25 @@ class SubjectTest {
     }
 
     @Test
-    void throwIaeWhenUsingNonUniqueClassWithUniqueExractor() {
+    void throwIaeWhenUsingNonSingularClassWithUniqueExtractor() {
+        // Given
         Subject subject = new Subject(user1, unique);
+
+        // When
+        // Then
         Assertions.assertThatThrownBy(() -> subject.uniquePrincipalOfType(FakeMultiplePrincipal.class))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("class io.kroxylicious.proxy.authentication.FakeMultiplePrincipal is not annotated with")
-                .hasMessageContaining("io.kroxylicious.proxy.authentication.Unique");
+                .hasMessageContaining("is not a singular principal type");
+    }
 
+    @Test
+    void canExtractSingularOnlyPrincipals() {
+        // Given
+        Subject subject = new Subject(user1, singularOnly);
+
+        // When
+        // Then
+        Assertions.assertThat(subject.uniquePrincipalOfType(FakeSingularOnlyPrincipal.class)).hasValue(singularOnly);
     }
 
     @Test

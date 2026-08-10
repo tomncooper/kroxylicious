@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.kroxylicious.identity.Identity;
+import io.kroxylicious.identity.SingularPrincipals;
 
 /**
  * <p>Represents an actor in the system.
@@ -56,14 +57,7 @@ public record Subject(Set<Principal> principals) implements Identity {
      * @param principals the principals
      */
     public Subject(Set<Principal> principals) {
-        principals.stream()
-                .collect(Collectors.groupingBy(Object::getClass))
-                .forEach((principalClass, instances) -> {
-                    if (principalClass.isAnnotationPresent(Unique.class) && instances.size() > 1) {
-                        throw new IllegalArgumentException(
-                                instances.size() + " principals of " + principalClass + " were found, but " + principalClass + " is annotated with " + Unique.class);
-                    }
-                });
+        SingularPrincipals.validateUniqueness(principals);
         Optional<User> user = uniquePrincipalOfType(principals, User.class);
         if (!principals.isEmpty() && user.isEmpty()) {
             throw new IllegalArgumentException("A subject with non-empty principals must have exactly one " + User.class.getName() + " principal.");
@@ -73,7 +67,7 @@ public record Subject(Set<Principal> principals) implements Identity {
 
     /**
      * Returns the unique principal of the given type, if present.
-     * @param uniquePrincipalType the principal type, which must be annotated with {@link Unique}
+     * @param uniquePrincipalType the principal type, which must be a singular principal type
      * @param <P> the principal type
      * @return the principal, or empty
      */
@@ -93,14 +87,14 @@ public record Subject(Set<Principal> principals) implements Identity {
 
     private static <P extends io.kroxylicious.identity.Principal> Optional<P> uniquePrincipalOfType(Set<? extends io.kroxylicious.identity.Principal> principals,
                                                                                                     Class<P> uniquePrincipalType) {
-        if (uniquePrincipalType.isAnnotationPresent(Unique.class)) {
+        if (SingularPrincipals.isSingular(uniquePrincipalType)) {
             return principals.stream()
                     .filter(uniquePrincipalType::isInstance)
                     .map(uniquePrincipalType::cast)
                     .findFirst();
         }
         else {
-            throw new IllegalArgumentException(uniquePrincipalType + " is not annotated with " + Unique.class);
+            throw new IllegalArgumentException(uniquePrincipalType + " is not a singular principal type");
         }
     }
 
