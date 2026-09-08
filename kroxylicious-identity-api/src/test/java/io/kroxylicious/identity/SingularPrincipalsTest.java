@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings({ "java:S5738", "removal" })
 class SingularPrincipalsTest {
 
     @Test

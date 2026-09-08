@@ -23,6 +23,7 @@ import java.util.Set;
  *
  * @param principals the set of identifiers associated with this subject
  */
+@SuppressWarnings({ "java:S5738", "removal" })
 public record Subject(Set<? extends Principal> principals) implements Identity {
 
     private static final Subject ANONYMOUS = new Subject(Set.of());

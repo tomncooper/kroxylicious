@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link io.kroxylicious.identity.Subject} and the deprecated proxy
  * {@link io.kroxylicious.proxy.authentication.Subject} via the {@link Identity} bridge.
  */
+@SuppressWarnings({ "java:S5738", "removal" })
 class AuthorizerBridgeTest {
 
     record Role(String name) implements io.kroxylicious.identity.Principal {}

@@ -11,6 +11,7 @@ import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings({ "java:S5738", "removal" })
 class SubjectTest {
 
     User user1 = new User("name");

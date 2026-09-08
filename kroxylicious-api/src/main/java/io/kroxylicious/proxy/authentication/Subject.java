@@ -29,6 +29,7 @@ import io.kroxylicious.identity.SingularPrincipals;
  * @deprecated Use {@link io.kroxylicious.identity.Subject} instead. Will be removed at 1.0.
  */
 @Deprecated(since = "0.25.0", forRemoval = true)
+@SuppressWarnings({ "java:S5738", "removal" })
 public record Subject(Set<Principal> principals) implements Identity {
 
     private static final Subject ANONYMOUS = new Subject(Set.of());
